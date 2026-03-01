@@ -1,0 +1,6959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" href="dracremental_logo.png" type="image/png">
+<title>Dracremental :3</title>
+
+<style>
+body {
+  background: #1f1f3f;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  padding-top: 60px;
+}
+
+html, body {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  position: relative;
+}
+
+.tabContent {
+  display: none;
+}
+
+/* Top-right XP display */
+
+button {
+  font-size: 18px;
+  padding: 10px 20px;
+  margin: 20px;
+  cursor: pointer;
+}
+
+#cardGrid {
+  display: grid;
+  grid-template-columns: repeat(9, 104px);
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.card {
+  width: 104px;
+  height: 192px;
+  border: 2px solid #555;
+  position: relative;
+  background: #666;
+  border-radius: 15px;
+  overflow: hidden;
+
+  transition: transform 0.15s ease;
+  transform-origin: center;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.card.owned {
+  background: #000;
+  cursor: pointer;
+}
+
+.card.owned:hover {
+  transform: scale(0.95);
+}
+
+
+.rarity-1 { border-color: #aaa; }
+.rarity-2 { border-color: #4caf50; }
+.rarity-3 { border-color: #2196f3; }
+.rarity-4 { border-color: #9c27b0; }
+.rarity-5 { border-color: #ff9800; }
+
+/* Level-up indicator */
+.level-up-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  background: #4caf50;
+  color: #000;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+
+/* Modal */
+#modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+#modalContent {
+  background: #2f2f5f;
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+  border-radius: 8px;
+}
+
+#modal img {
+  width: 208px;
+  height: 384px;
+  border-radius: 27px;
+  object-fit: contain;
+}
+
+.progress-bar {
+  width: 220px;
+  height: 20px;
+  background: #444;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: #4caf50;
+  width: 0%;
+}
+
+.level-button {
+  margin-top: 12px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.level-button:disabled {
+  background: #555;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+#playerStats {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#playerXPContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+#playerLevelText {
+  white-space: nowrap;
+}
+
+#playerXPBar {
+  position: relative;
+  width: 260px;
+  height: 26px;
+  background: #444;
+  border-radius: 13px;
+  overflow: hidden;
+}
+
+#playerXPFill {
+  height: 100%;
+  background: linear-gradient(to right, #4caf50, #81c784);
+  width: 0%;
+}
+
+#playerXPText {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #fff;
+  pointer-events: none;
+}
+
+.xp-upgrade {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.xp-upgrade .increase {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+#totalXPPerSec {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 8px;
+}
+
+#timeToNextLevel {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+#keysText,
+#spicyPepperText {
+  font-size: 14px;
+  color: #fff;
+  margin-top: 10px;
+  text-align: right;
+}
+
+#tabs {
+position: fixed;
+top: 0;
+width: 100%;
+display: flex;
+justify-content: center;
+gap: 10px;
+background: #111;
+padding: 8px;
+z-index: 10;
+}
+
+.tab {
+background: #333;
+color: #eee;
+border: none;
+padding: 8px 14px;
+cursor: pointer;
+}
+
+.dragonTop {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-top: 20px;
+}
+
+.sideStats {
+width: 160px;
+font-size: 14px;
+}
+
+.weaponSelect {
+margin-top: 20px;
+display: flex;
+gap: 10px;
+justify-content: center;
+}
+
+.weapon.selected {
+outline: 1px solid #eee;
+}
+
+.dragonModal canvas {
+background: #1e1e1e;
+border: 2px solid #555;
+}
+
+#tabHeader {
+  position: fixed;
+  top: 20px;
+  left: 30px;
+  background: #2f2f5f;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;   /* ← key change */
+  gap: 6px;                 /* space between buttons and name row */
+  z-index: 1000;
+}
+
+#tabHeader button {
+  font-size: 12px;
+  padding: 4px 8px;
+  background: #4f4f9f;
+  color: #eee;
+  border: 1px solid #666;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0px #000;
+}
+
+#tabHeader button:hover {
+  background: #5f5fbf;
+  box-shadow: 0px 0px 0px #000;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+#dragonTopRow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.dragonSide.player {
+  justify-self: end;
+  padding-right: 140px; /* ← move player away from button */
+}
+
+.dragonSide.dragon {
+  justify-self: start;
+  padding-left: 140px; /* → move dragon away from button */
+}
+
+#fightDragonBtn {
+  padding: 14px 24px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#playerIcon,
+#dragonIcon {
+  width: 140px;
+  height: 140px;
+  border-radius: 20px;
+  position: relative;
+  margin: 0 auto 10px;
+}
+
+#playerIcon::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: black;
+  border-radius: 50%;
+  position: absolute;
+  right: 25px;
+  top: 40%;
+  transform: translateY(-50%);
+}
+
+#dragonIcon {
+  background: #0f0f0f;
+}
+
+#dragonIcon::after {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: #00ff66;
+  border-radius: 50%;
+  position: absolute;
+  left: 25px;
+  top: 40%;
+  transform: translateY(-50%);
+}
+
+.iconSelector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.colorArrow {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #666;
+  background: #eee;
+  cursor: pointer;
+}
+
+#weaponContainer {
+  margin-top: 70px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: #2f2f5f;
+  font-size: 18px;
+  border: 1px solid #eee;
+}
+
+#weaponContainer span {
+  margin-right: 6px;
+  color: #ddd;
+}
+
+.weapon {
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 1px solid #aaa;
+  background: #eee;
+  color: black;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+}
+
+.weapon:hover {
+  transform: scale(1.05);
+}
+
+/* Selected state only */
+.weapon.selected {
+  color: white;
+  border-color: transparent;
+}
+
+.playerIconWrapper {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 10px;
+}
+
+#playerIcon {
+  width: 140px;
+  height: 140px;
+  border-radius: 20px;
+  position: relative;
+}
+
+.colorArrow {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #666;
+  background: #eee;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.colorArrow:first-child {
+  left: -80px;   /* clearly outside icon */
+}
+
+.colorArrow:last-child {
+  right: -80px;  /* clearly outside icon */
+}
+
+.weapon.fire.selected   { background: #e54935; }
+.weapon.ice.selected    { background: #6fbcdf; color: #003344; }
+.weapon.poison.selected { background: #63d047; color: #114400}
+.weapon.normal.selected { background: #8e24aa; }
+
+.statsBlock {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.conditionalStat {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.conditionalStat.visible {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Weapon tooltip */
+.weaponBtn {
+  position: relative;
+}
+
+.weaponBtn:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #eee;
+  padding: 6px 8px;
+  font-size: 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+#weaponTooltip {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(20, 20, 20, 0.95);
+  color: #eee;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: none;
+  z-index: 1000;
+  white-space: nowrap;
+}
+
+#fightButtonWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+#weaponWarning {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 6px;
+  width: max-content;
+
+  font-size: 14px;
+  color: #ff4444;
+
+  opacity: 0;
+  pointer-events: none;
+}
+
+.poison-up {
+  transform: translateY(-15px);
+}
+
+#dragonModal {
+  pointer-events: all;
+}
+
+body.modal-open {
+  pointer-events: none;
+}
+
+body.modal-open #dragonModal {
+  pointer-events: all;
+}
+
+body.interaction-locked {
+  pointer-events: none;
+}
+
+body.interaction-locked #dragonModal {
+  pointer-events: all;
+}
+
+#manaBarFill {
+  background: linear-gradient(to right, #3fa9ff, #66c2ff);
+  box-shadow:
+    0 0 12px rgba(0, 207, 255, 0.8),
+    0 0 24px rgba(0, 207, 255, 0.8);
+}
+
+#manaBarContainer {
+  box-shadow: 0 0 8px rgba(63, 169, 255, 0.35);
+}
+
+.upgradeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 450px);
+  grid-template-rows: repeat(4, auto);
+
+  row-gap: 12px;
+  column-gap: 34px;
+
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.upgrade {
+  background: #17172f;
+  border: rgba(0, 207, 255, 0.8) 1px solid;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  width: 450px;
+}
+
+.upgrade button {
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  width: auto;
+}
+
+.upgrade button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #333;
+}
+
+.upgrade .preview {
+  margin-left: 8px;
+  color: #6f6;
+  display: none;
+}
+
+#battleUpgradesContainer {
+  margin-top: 60px;
+  margin-bottom: 30px;
+}
+
+.input-error {
+  border-color: #ff4444 !important;
+}
+
+/* Buttons closer together + left aligned */
+#tabButtonsRow {
+  display: flex;
+  gap: 6px;          /* closer than before */
+  justify-content: flex-start;
+  align-items: center;
+}
+
+/* Name row sits directly under buttons, left aligned */
+#nameRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  color: #eee;
+  padding: 12px 16px;
+  margin-top: -8px;
+}
+
+/* Label + input on one line, left aligned */
+#nameInputRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+/* Input styling (moved from inline styles) */
+#playerNameInput {
+  width: 220px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #888;
+  outline: none;
+  font-size: 14px;
+}
+
+/* Error styling (moved from inline styles) */
+#playerNameError {
+  min-height: 16px;
+  font-size: 12px;
+  color: #ff4444;
+  display: none;
+}
+
+#playerStatsContainer {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+
+  background: #2f2f5f;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px 24px;
+
+  z-index: 1000;
+}
+
+/* #playerStats no longer needs to be fixed */
+#playerStats {
+  position: static;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+#miningGridViewport {
+  display: grid;
+  grid-template-columns: repeat(7, 36px);
+  grid-template-rows: repeat(10, 36px);
+  gap: 6px;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 12px;
+  background: #17172f;
+  border: 1px solid #666;
+  border-radius: 12px;
+  width: max-content;
+}
+
+.gridCell {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #2f2b55;
+  box-sizing: border-box;
+}
+
+/* --- Mining bubble row --- */
+#miningBubbleRow {
+  display: grid;
+  grid-template-columns: repeat(7, 36px);
+  gap: 6px;
+  justify-content: center;
+  margin: 0 auto 8px;
+  padding: 6px 12px;
+  background: #17172f;
+  border: 1px solid #666;
+  border-radius: 12px;
+  width: max-content;
+}
+
+.bubbleSlot {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  position: relative;
+}
+
+.playerBubble {
+  position: absolute;
+  inset: 4px;
+  border-radius: 999px;
+  border: 2px solid rgba(120, 200, 255, 0.9);
+  background: rgba(80, 160, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.playerIconMini {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #fff;
+}
+
+/* --- Mining grid cells --- */
+#miningGridViewport .gridCell {
+  position: relative; /* allow player overlay */
+}
+
+.miningPlayerHere::after{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  border-radius:5px;
+  background:#ffffff;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+
+  /* Glow */
+  box-shadow:
+    0 0 10px rgba(255,255,255,0.8),
+    0 0 20px rgba(180,220,255,0.6),
+    0 0 36px rgba(120,200,255,0.4);
+
+  transition: opacity 0.15s ease;
+}
+
+/* Hide the "real" marker while the falling clone is animating */
+body.mining-falling .miningPlayerHere::after {
+  opacity: 0;
+}
+
+#miningHud{
+  width: max-content;
+  margin: 0 auto 10px;
+  padding: 10px 14px;
+  background: #17172f;
+  border: 1px solid #666;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 14px;
+  color: #eee;
+  line-height: 1.4;
+}
+
+.ore-ruby {
+  background: #e53935 !important;
+  border: 2px solid #ff6b6b;
+}
+
+.ore-topaz {
+  background: #fb8c00 !important;
+  border: 2px solid #ffb74d;
+}
+
+.ore-citrine {
+  background: #fdd835 !important;
+  border: 2px solid #fff176;
+}
+
+.ore-emerald {
+  background: #43a047 !important;
+  border: 2px solid #66bb6a;
+}
+
+.ore-sapphire {
+  background: #1e88e5 !important;
+  border: 2px solid #64b5f6;
+}
+
+.ore-amethyst {
+  background: #8e24aa !important;
+  border: 2px solid #ba68c8;
+}
+
+.ore-morganite {
+  background: #ff77b7 !important;
+  border: 2px solid #ff9ccc;
+}
+
+.oreName.ruby      { color: #e53935; }
+.oreName.topaz     { color: #fb8c00; }
+.oreName.citrine   { color: #fdd835; }
+.oreName.emerald   { color: #43a047; }
+.oreName.sapphire  { color: #1e88e5; }
+.oreName.amethyst  { color: #8e24aa; }
+.oreName.morganite { color: #ff77b7; }
+
+/* Player dot overlay (same as before) */
+#miningGridViewport .gridCell { position: relative; }
+
+#miningBubbleRow{
+  display:grid;
+  grid-template-columns: repeat(7, 36px);
+  gap:6px;
+  justify-content:center;
+  margin: 0 auto 20px;   /* 20px separation from grid */
+  padding:12px;
+  background:#17172f;
+  border:1px solid #666;
+  border-radius:12px;
+  width:max-content;
+}
+
+#miningBubbleRow .bubbleCell{
+  border:2px solid #BFFFFF;
+  border-radius:999px;
+  background:#2b2b55;   /* same as empty grid */
+  position:relative;
+  box-sizing:border-box;
+}
+
+/* Ensure the player marker shows above bubbleGem */
+#miningBubbleRow .miningPlayerHere::after{
+  z-index: 5;
+}
+
+#miningBubbleRow {
+  transition: opacity 1s ease;
+  opacity: 1;
+}
+
+#miningBubbleRow.fading-out {
+  opacity: 0;
+}
+
+/* A real DOM player token we can animate */
+.miningPlayerToken {
+  width:18px;
+  height:18px;
+  border-radius:5px;
+  background:#ffffff;
+  pointer-events:none;
+
+  box-shadow:
+    0 0 6px rgba(255,255,255,0.8),
+    0 0 14px rgba(180,220,255,0.6),
+    0 0 26px rgba(120,200,255,0.4);
+}
+
+.gridKeyEmoji {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  line-height: 1;
+  filter: drop-shadow(0 0 6px rgba(255, 210, 120, 0.55));
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Ensure key appears above ore color backgrounds and below player marker */
+#miningGridViewport .gridCell { position: relative; }
+
+#miningGemList{
+  width: 170px;
+  margin-top: 64px;
+  margin-right: 128px;
+  background: #17172f;
+  border: 1px solid #666;
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 14px;
+  color: #eee;
+  line-height: 1.45;
+
+  justify-self: end; /* sit to the LEFT of center column, right-aligned */
+}
+
+#miningGemList .title{
+  font-weight: bold;
+  font-size: 16px; /* slightly larger */
+  margin-bottom: 6px;
+}
+
+#miningGemList .gemRow{
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#miningGemList .gemName{
+  font-weight: 700;
+}
+
+#miningGemList .gemCount{
+  color: #ddd;
+  font-variant-numeric: tabular-nums;
+}
+
+#miningLayoutRow{
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* keeps middle column centered */
+  align-items: start;
+  column-gap: 18px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+#miningCenterCol{
+  justify-self: center; /* hard-center the HUD + bubble + grid block */
+}
+
+#miningGemProductText{
+  margin-top: 32px;
+  margin-left: -26px;
+  font-size: 14px;
+  width: 250px;
+  color: #eee;
+  text-align: center;
+}
+
+#miningGemProductText .xpMult {
+  font-weight: bold;
+  color: #4caf50; /* green */
+}
+
+#miningLeftCol{
+  width: 170px;
+  margin-top: 64px;
+  margin-right: 128px;
+  justify-self: end; /* stays left of centered grid */
+}
+
+/* Left column wraps gem list + product text */
+#miningLeftCol{
+  justify-self: end;
+  margin-top: 64px;
+  margin-right: 128px;
+  width: 170px;
+}
+
+/* Keep gem list styling as-is but remove top margins from it */
+#miningGemList{
+  width: 170px;
+  margin-top: 0;
+  margin-right: 0;
+  background: #17172f;
+  border: 1px solid #666;
+  border-radius: 12px;
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 14px;
+  color: #eee;
+  line-height: 1.45;
+}
+
+#miningGemProductText{
+  width: 250px;
+  margin-top: 50px;
+  font-size: 16px;
+  color: #eee;
+  text-align: center;
+}
+
+#miningGemProductText .xpMult {
+  font-weight: bold;
+  color: #4caf50;
+}
+
+/* Right column upgrades */
+#miningUpgradesCol{
+  justify-self: start;
+  width: 320px;
+  margin-left: 64px;
+  text-align: left;
+}
+
+/* Make mining upgrades match the dragon upgrade look */
+#miningUpgrades .upgrade{
+  background: #17172f;
+  border: rgba(0, 207, 255, 0.8) 1px solid;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  width: 320px;
+  margin-bottom: 12px;
+}
+
+#miningUpgrades .upgrade button{
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  width: auto;
+}
+
+#miningUpgrades .upgrade button:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #333;
+}
+
+#miningUpgrades .upgrade .preview{
+  margin-left: 8px;
+  color: #6f6;
+  display: none;
+}
+
+#miningUpgradesCol{
+  justify-self: start;
+  width: 400px;
+  margin-left: 64px;
+
+  /* center ALL text in this column */
+  text-align: center;
+}
+
+#miningDirtOwnedText{
+  margin-top: 64px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #eee;
+}
+
+/* Individual upgrade cards only (dragon-style) */
+#miningUpgrades .upgrade{
+  background: #17172f;
+  border: rgba(0, 207, 255, 0.8) 1px solid;
+  border-radius: 10px;
+  padding: 10px;
+  color: white;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+
+  /* center card contents */
+  text-align: center;
+}
+
+#miningUpgrades .upgrade button{
+  margin-top: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  width: auto;
+}
+
+#miningUpgrades .upgrade button:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #333;
+}
+
+#miningUpgrades .upgrade .preview{
+  margin-left: 8px;
+  color: #6f6;
+  display: none;
+}
+
+/* Mining: explored empty cell */
+.minedEmptyCell {
+  background: #0f0f1f !important;
+  border: 1px solid #2b2b3f;
+}
+
+/* --- Autominer bottom bar --- */
+#autominerBar {
+  margin: 30px auto 40px;
+  padding: 16px 20px;
+
+  background: #17172f;
+  border: 1px solid #666;
+  border-radius: 12px;
+
+  width: fit-content;
+  text-align: center;
+}
+
+#autominerBar button {
+  font-size: 18px;
+  padding: 12px 18px;
+  margin: 0;
+}
+
+.autominerControls {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  color: #eee;
+  font-size: 14px;
+}
+
+.autominerControls input {
+  width: 50px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #888;
+  outline: none;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 26px;
+}
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: #555;
+  border-radius: 999px;
+  transition: 0.15s ease;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  top: 3px;
+  background: white;
+  border-radius: 999px;
+  transition: 0.15s ease;
+}
+.switch input:checked + .slider {
+  background: #4caf50;
+}
+.switch input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* --- Autominer marker in mining grid --- */
+.autominerHere::before{
+  content:"";
+  position:absolute;
+  width:12px;
+  height:12px;
+  border-radius:4px;
+  background:#77EF1F; /* light green */
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  box-shadow:
+    0 0 8px rgba(119,239,31,0.8),
+    0 0 16px rgba(119,239,31,0.45);
+  z-index: 4;
+  pointer-events: none;
+}
+
+body { padding-bottom: 50px; }
+
+.timer-red {
+  color: #ff4444 !important;
+}
+
+.oreSymbol {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -52%);
+  font-size: 14px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.95);
+  text-shadow: 0 0 6px rgba(0,0,0,0.8);
+  pointer-events: none;
+  z-index: 2;
+}
+
+#settingsLayout {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  margin-top: 70px;
+  padding: 0 40px;
+}
+
+/* Stats panel (larger area) */
+#statsContainer {
+  width: 480px;
+  background: #17172f;
+  border: 1px solid #666;
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+#settingsContainer h2,
+#statsContainer h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+#settingsContainer {
+  width: 480px;
+  margin: 0;
+  background: #17172f;
+  border: 1px solid #666;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: left;
+}
+
+/* Top containers opacity system */
+#tabHeader,
+#playerStatsContainer {
+  transition: opacity 0.2s ease;
+}
+
+/* When hovered: always readable */
+#tabHeader:hover,
+#playerStatsContainer:hover {
+  opacity: 1 !important;
+}
+
+#tabButtonsRow {
+  display: flex;
+  justify-content: center;   /* center the group instead of stretching */
+  align-items: center;
+  gap: 10px;                 /* spacing BETWEEN buttons (controls closeness) */
+  flex-wrap: wrap;           /* prevents overlap on smaller screens */
+  padding: 6px 12px;
+}
+
+#tabButtonsRow button {
+  margin: 0;
+  margin-right: 16px;
+  white-space: nowrap;
+}
+
+.achievementsGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+}
+
+.achievementBox {
+  border: 2px solid #555;
+  padding: 10px;
+  border-radius: 8px;
+  background: #1a1a2f;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.achievementBox.claimed {
+  border-color: #00ff66;
+}
+
+.achievementClaimBtn {
+  margin-top: 8px;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.achievementClaimBtn.claimable {
+  background: #00aa33;
+  color: white;
+}
+
+.achievementDot {
+  display: none;
+  width: 10px;
+  height: 10px;
+  background: red;
+  border-radius: 50%;
+  margin-left: 6px;
+}
+
+.achievementPopup {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #efef00;
+  border: solid black 2px;
+  color: black;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  z-index: 9999;
+  animation: achievementFade 3s ease forwards;
+}
+
+@keyframes achievementFade {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.tabButton {
+  position: relative;
+}
+
+.achievementDot {
+  display: none;
+  width: 8px;
+  height: 8px;
+  background: #ee0000;
+  border-radius: 50%;
+  margin-left: 6px;
+  margin-top: -2px;
+  vertical-align: middle;
+}
+
+.miningCursorHere{
+  outline: 2px solid rgba(255,255,255,0.9);
+  outline-offset: -2px;
+}
+
+.gridCell.autominerCursorHere{
+  outline: 2px solid #77EF1F;
+  outline-offset: -2px;
+}
+
+/* Card grid overlay: rows 25..97 (height 73px) */
+.card-name-cover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 25px;
+  height: 71px;
+  background: rgba(120, 120, 120, 1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  pointer-events: none; /* don't block clicking the card */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+/* Modal wrapper so the overlay can sit on the image */
+#modalImageWrap {
+  position: relative;
+  width: max-content; /* keep wrapper sized to image */
+}
+
+/* Modal overlay: rows 50..194 (height 145px) */
+.modal-card-name-cover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50px;
+  height: 141px;
+  background: rgba(120, 120, 120, 1);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  pointer-events: none;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+
+.tabButtonGlow {
+  box-shadow: 0 0 10px rgba(255,255,255,0.9), 0 0 22px rgba(255,255,255,0.7);
+  animation: tabGlowPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes tabGlowPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255,255,255,0.7), 0 0 18px rgba(255,255,255,0.5); }
+  50%      { box-shadow: 0 0 14px rgba(255,255,255,1.0), 0 0 30px rgba(255,255,255,0.8); }
+}
+
+/* Disabled tab buttons look gray */
+#tabButtonsRow button:disabled {
+  background: #444;
+  border: 1px solid #666;
+  color: #aaa;
+  cursor: not-allowed;
+  opacity: 1;          /* prevents browser from fading it too much */
+  filter: none;        /* avoids extra dimming in some browsers */
+  box-shadow: none;    /* ensures no glow leaks through */
+}
+
+/* Optional: prevent hover styles from making disabled buttons look active */
+#tabButtonsRow button:disabled:hover {
+  background: #444;
+}
+
+/* Intro modal overlay */
+.intro-modal {
+  display: none;               /* shown via JS */
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 5000;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The dialog */
+.intro-modal-content {
+  width: min(720px, 92vw);
+  max-height: 80vh;
+  background: #1f1f3f;
+  border: 2px solid #3f3f7f;
+  border-radius: 14px;
+  padding: 16px 16px 14px;
+  color: #eee;
+  box-sizing: border-box;
+}
+
+/* Scrollable text area */
+.intro-modal-scroll {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 12px;
+  max-height: 52vh;            /* scroll within modal */
+  overflow-y: auto;
+  line-height: 1.55;
+}
+
+/* Make the button stick visually at bottom */
+#enterGameBtn {
+  margin-top: 12px;
+  width: 25%;
+  font-size: 16px;
+  padding: 10px 12px;
+}
+
+/* Help button (bottom-right) */
+#helpBtn {
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.35);
+  background: rgba(20,20,40,0.9);
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  z-index: 6000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+#helpBtn:hover {
+  border-color: rgba(255,255,255,0.65);
+}
+
+#helpBtn:active {
+  transform: translateY(1px);
+}
+
+</style>
+</head>
+
+<body>
+
+  <div id="playerStatsContainer">
+    <div id="playerStats">
+      <div id="playerLevelText">Level 1</div>
+  
+      <div id="playerXPContainer">
+        <div id="playerXPBar">
+          <div id="playerXPFill"></div>
+          <div id="playerXPText">0 / 10000 XP</div>
+        </div>
+  
+        <div id="totalXPPerSec">0 XP/sec</div>
+        <div id="timeToNextLevel">Next level in --</div>
+        <div id="keysText" style="display:none"></div>
+        <div id="spicyPepperText" style="display:none"></div>
+      </div>
+    </div>
+  </div>     
+
+<h1>Dracremental</h1>
+
+<div id="tabHeader">
+  <div id="tabButtonsRow">
+    <button onclick="showTab('cards')">Cards</button>
+    <button id="miningTabBtn" onclick="showTab('mining')">Mining</button>
+    <button id="dragonTabBtn" onclick="showTab('dragon')">Dragon</button>
+    <button id="achievementsTabBtn" onclick="showTab('achievements')" class="tabButton">
+      Achievements
+      <span id="achievementNotificationDot" class="achievementDot"></span>
+    </button>
+    <button onclick="showTab('settings')">Settings/Stats</button>
+  </div>
+
+  <div id="nameRow">
+    <div id="nameInputRow">
+      <div>What do you want to be called?</div>
+      <input id="playerNameInput" type="text" maxlength="16" />
+    </div>
+
+    <div id="playerNameError"></div>
+  </div>
+</div>
+
+  <div id="cardsTab" class="tabContent" style="display:block; margin-top:64px;">
+    <button id="selectCardBtn" onclick="pullCard()">Select 1 Card</button>
+    <div id="cardCooldownText" style="font-size:12px;color:#aaa;margin-top:-12px;">
+      You can claim cards faster at higher player levels!
+    </div>    
+
+    <button id="draw1KeyBtn" onclick="drawCardsWithKeys(1)">
+      Draw 1 card for 1 key
+    </button>
+    
+    <button id="drawMaxKeysBtn" onclick="drawCardsWithKeys(keysOwned)">
+      Draw X cards for X keys
+    </button>
+
+    <div id="cardGotMessage" style="margin-top:10px; margin-bottom:30px; font-size:16px; color:#4caf50; display:none;"></div>
+    
+    <div id="cardGrid"></div>    
+
+<!-- Modal -->
+<div id="modal" onclick="closeModal(event)">
+  <div id="modalContent">
+    <div id="modalImageWrap">
+      <img id="modalImage" />
+      <div id="modalCardCover" class="modal-card-name-cover"></div>
+    </div>    
+    <div style="text-align:left">
+      <h2 id="modalTitle"></h2>
+      <h3 id="modalLevel"></h3>
+      <p id="modalProgressText"></p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="modalProgressBar"></div>
+      </div>
+      <p id="modalXPText" class="xp-upgrade"></p>
+      <button
+        id="levelUpButton"
+        class="level-button"
+        onclick="levelUpFromModal()"
+      >
+        Level-Up Card
+      </button>
+      <p id="modalPepperReward" style="font-size:12px;color:#4caf50;margin-top:4px;"></p>
+      <p id="modalNerfText" style="font-size:12px;color:#aaa;margin-top:6px;"></p>
+    </div>
+  </div>
+</div>
+</div>
+
+<div id="miningTab" class="tabContent" style="display:none;">
+  <div id="miningLayoutRow" style="margin-top:64px;">
+    <!-- LEFT COLUMN (gem list + product text together) -->
+    <div id="miningLeftCol">
+      <div id="miningGemList"></div>
+      <div id="miningGemProductText"></div>
+    
+      <!-- Teleport UI -->
+      <div id="miningTeleportBox" style="margin-top:14px; text-align:center;margin-left:24px;">
+        <div style="font-size:14px;color:#eee;margin-top:50px;">
+          Teleport to depth:
+          <input id="teleportDepthInput" type="text" inputmode="numeric"
+            style="width:50px;padding:6px 10px;margin-top:8px;border-radius:8px;border:1px solid #888;outline:none;font-size:14px;text-align:center;">
+        </div>
+    
+        <div id="teleportError" style="min-height:16px;margin-top:6px;font-size:12px;color:#ff4444;opacity:0;transition:opacity">
+          Please pick a depth you have reached already!
+        </div>
+    
+        <button id="teleportBtn" style="margin-top:8px;font-size:16px;padding:10px 16px;"
+          onclick="teleportToDepthFromUI()">
+          Teleport!
+        </button>
+
+        <div style="
+        width: 420px;
+        margin: 14px auto 0;
+        text-align: center;
+        margin-left: -136px;
+      ">
+      
+        <button id="returnToSurfaceBtn"
+          style="
+            width: 40%;
+            font-size: 16px;
+            padding: 8px 12px;
+          "
+          onclick="returnToSurface()">
+          Return to Surface
+        </button>
+      
+        <div style="
+          width: 80%;
+          font-size: 12px;
+          color: #aaa;
+          margin-top: -6px;
+          line-height: 1.4;
+          margin-left: 36px;
+        ">
+          Return to Surface resets mined cells and your max depth reached, turns the autominer inactive, and returns you to the bubble row. You can do this once every 8 hours.
+        </div>
+      
+      </div>      
+
+      </div>
+    </div>
+  
+    <!-- CENTER COLUMN -->
+    <div id="miningCenterCol">
+      <div id="miningHud">
+        <div id="miningDepthText">Depth: 0</div>
+        <div id="autominerDepthText" style="font-size:14px;color:#aaa;">
+          Autominer depth: Inactive
+        </div>
+        <div id="miningNextOreText"></div>
+      </div>      
+  
+      <div id="miningBubbleRow"></div>
+      <div id="miningGridViewport"></div>
+    </div>
+  
+    <!-- RIGHT COLUMN (upgrades) -->
+    <div id="miningUpgradesCol">
+      <div id="miningDirtOwnedText">You have 0 dirt</div>
+      <div id="miningUpgrades"></div>
+    </div>    
+  </div>  
+
+  <div id="autominerBar" style="
+  margin: 24px auto 30px;
+  width: max-content;
+  background:#17172f;
+  border:1px solid #666;
+  border-radius:12px;
+  padding: 14px 18px;
+  text-align:center;
+"></div>
+
+</div>
+
+<div id="dragonTab" class="tabContent" style="display:none;">
+
+    <div id="dragonTopRow" style="margin-top:100px;">
+      <!-- Player side -->
+      <div class="dragonSide player">
+        <div id="playerNameLevelLabel" style="margin-bottom:8px; font-size:16px; font-weight:bold;"></div>
+        <div class="playerIconWrapper">
+          <button class="colorArrow" onclick="changePlayerColor(-1)">◀</button>
+          <div id="playerIcon"></div>
+          <button class="colorArrow" onclick="changePlayerColor(1)">▶</button>
+        </div>
+        <div id="dragonPlayerStats">
+            <div class="statsBlock" id="dragonPlayerStats">
+                <div>HP: <span id="playerHP">100</span></div>
+                <div>Damage: <span id="playerDamage">10</span></div>
+                <div id="playerFreezeStat" class="conditionalStat">
+                  Freeze Chance: <span id="playerFreeze">0%</span>
+                </div>
+                <div id="playerPoisonStat" class="conditionalStat">
+                  Poison Chance: <span id="playerPoison">0%</span>
+                </div>
+              </div>              
+        </div>
+      </div>      
+  
+      <!-- Fight button -->
+      <div id="fightButtonWrapper">
+        <button id="fightDragonBtn" onclick="openDragonModal()">
+          Fight Dragon
+        </button>
+      
+        <div id="weaponWarning">
+          You should probably choose a weapon first!
+        </div>
+      </div>      
+
+      <!-- Dragon side -->
+      <div class="dragonSide dragon">
+        <div id="dragonLevelLabel" style="margin-bottom:8px; font-size:16px; font-weight:bold;"></div>
+        <div id="dragonIcon"></div>
+        <div class="statsBlock" id="dragonStats">
+            <div>HP: <span id="dragonHP">100</span></div>
+            <div>Damage: <span id="dragonDamage">10</span></div>
+            <div id="dragonFreezeStat" class="conditionalStat">
+              Freeze Chance: <span id="dragonFreeze">0%</span>
+            </div>
+            <div id="dragonPoisonStat" class="conditionalStat">
+              Poison Chance: <span id="dragonPoison">0%</span>
+            </div>
+          </div>          
+      </div>
+    </div>
+
+    <div id="dragonRewards" style="
+  margin-top: 0px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #eee;
+"></div>
+  
+    <!-- Weapon selection -->
+    <div id="weaponContainer">
+      <span>Choose weapon:</span>
+      <button class="weapon fire weaponBtn"
+      data-tooltip="3× Damage"
+      onclick="selectWeapon('fire')">Fire</button>
+    
+    <button class="weapon ice weaponBtn"
+      data-tooltip="25% chance to freeze enemy for 2 seconds"
+      onclick="selectWeapon('ice')">Ice</button>
+    
+    <button class="weapon poison weaponBtn"
+      data-tooltip="15% chance to poison enemy (10% damage per second)"
+      onclick="selectWeapon('poison')">Poison</button>
+    
+    <button class="weapon normal weaponBtn"
+      data-tooltip="1.5× damage, 10% freeze, 5% poison"
+      onclick="selectWeapon('normal')">Normal</button>    
+    </div>
+
+    <div id="battleUpgradesContainer">
+      <h3>Battle Upgrades</h3>
+      <div id="battleUpgrades" class="upgradeGrid"></div>
+    </div>    
+  
+  </div>
+
+  <div id="achievementsTab" class="tabContent" style="display:none; margin-top:80px;">
+    <div style="max-width:1050px;margin:0 auto;background:#17172f;border:1px solid #666;border-radius:12px;padding:16px;text-align:left;">
+      <h2 style="margin-top:8px;margin-bottom:24px;text-align:center;">Achievements</h2>
+      <hr style="border:none;border-top:1px solid #333;margin:12px 0;margin-bottom:32px;">
+      <div id="achievementsContent">
+        <div id="achievementsGrid" class="achievementsGrid"></div>
+        <span id="achievementNotificationDot" class="achievementDot"></span>
+      </div>
+    </div>
+  </div>  
+    
+  <div id="settingsTab" class="tabContent" style="margin-top:80px;">
+    <div id="settingsLayout" style="display:flex; align-items:flex-start; justify-content:center; gap:22px; flex-wrap:wrap;">
+  
+      <!-- SETTINGS (single container) -->
+      <div id="settingsContainer">
+        <h2 style="margin-top:0;">Settings</h2>
+  
+        <!-- Manual save -->
+        <div style="margin-bottom:14px;">
+          <button onclick="saveGame(true)" style="margin:0;">Manual Save</button>
+          <span id="manualSaveToast" style="margin-left:10px;opacity:0;transition:opacity 0.2s ease;">Game Saved!</span>
+        </div>
+  
+        <hr style="border:none;border-top:1px solid #333;margin:12px 0;">
+  
+        <!-- Autosave interval -->
+        <div style="margin-bottom:14px;">
+          <div id="autosaveTitle" style="font-weight:bold;">Autosave Interval: 30s</div>
+          <input id="autosaveSlider" type="range" min="0" max="4" step="1" style="width:320px;margin-top:6px;">
+          <div style="font-size:12px;color:#aaa;margin-top:0px;">Choose Never to disable autosaves.</div>
+        </div>
+  
+        <!-- Offline progress -->
+        <div style="margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+          <label class="switch">
+            <input id="offlineToggle" type="checkbox">
+            <span class="slider"></span>
+          </label>
+          <div><b>Offline progress</b></div>
+        </div>
+  
+        <!-- Scientific notation threshold -->
+        <div style="margin-bottom:14px;">
+          <div id="sciTitle" style="font-weight:bold;">Start scientific notation at: e6</div>
+          <input id="sciSlider" type="range" min="0" max="6" step="1" style="width:320px;margin-top:6px;">
+        </div>
+  
+        <!-- Optimize dragon fighting -->
+        <div style="margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+          <label class="switch">
+            <input id="dragonOptToggle" type="checkbox">
+            <span class="slider"></span>
+          </label>
+          <div><b>Optimize dragon fighting</b> <span style="color:#aaa;font-size:12px;">(may reduce lag)</span></div>
+        </div>
+  
+        <!-- Mining colorblind mode -->
+        <div style="margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+          <label class="switch">
+            <input id="cbMiningToggle" type="checkbox">
+            <span class="slider"></span>
+          </label>
+          <div><b>Mining colorblind mode</b> <span style="color:#aaa;font-size:12px;">(shows symbols on ores)</span></div>
+        </div>
+  
+        <!-- Chat notifications -->
+        <div style="margin-bottom:14px;display:flex;align-items:center;gap:10px;">
+          <label class="switch">
+            <input id="showLevelChatToggle" type="checkbox">
+            <span class="slider"></span>
+          </label>
+          <div><b>Disable AI images</b> <span style="color:#aaa;font-size:12px;"></span></div>
+        </div>
+
+        <!-- Top container opacity -->
+<div style="margin-bottom:14px;">
+  <div id="opacityTitle" style="font-weight:bold;">
+    Top Container Opacity: 100%
+  </div>
+  <input id="opacitySlider" type="range" min="0" max="100" step="5" style="width:320px;margin-top:6px;">
+  </div>
+  
+        <hr style="border:none;border-top:1px solid #333;margin:12px 0;">
+  
+        <!-- Hard reset -->
+        <div>
+          <button onclick="hardReset()" style="background:#a11;border:1px solid #f66;border-radius:4px;margin-left:0px;">Hard Reset</button>
+          <div style="font-size:12px;color:#aaa;margin-top:-6px;">
+            This permanently deletes your save and refreshes the page.
+          </div>
+        </div>
+      </div>
+  
+<!-- STATS + Discord link -->
+<div id="statsBlockWrap" style="position:relative; display:inline-block;">
+
+  <div id="statsContainer">
+    <h2>Stats</h2>
+    <div id="statsContent" style="text-align:left; line-height:1.55;">
+      <div><b>Total time played:</b> <span id="statTimeDHMS">0d 00:00:00</span> (<span id="statTimeSeconds">0</span> seconds)</div>
+      <div><b>Achievements completed:</b> <span id="statAchievements">0</span>/20</div>
+
+      <div style="height:10px;"></div>
+
+      <div><b>Total cards opened:</b> <span id="statCardsOpened">0</span></div>
+      <div><b>Cards unlocked:</b> <span id="statCardsUnlocked">0</span>/45</div>
+      <div><b>Total XP gained:</b> <span id="statTotalXPGained">0</span></div>
+      <div><b>Total card level-ups:</b> <span id="statCardLevelUps">0</span></div>
+      <div><b>Total spicy peppers gained:</b> <span id="statSpicyGained">0</span></div>
+
+      <div style="height:10px;"></div>
+
+      <div><b>Total dirt gained:</b> <span id="statDirtGained">0</span></div>
+      <div><b>Total gems gained:</b> <span id="statGemsGained">0</span></div>
+      <div><b>Total keys gained:</b> <span id="statKeysGained">0</span></div>
+      <div><b>Deepest depth reached:</b> <span id="statDeepestDepth">0</span></div>
+      <div><b>Times returned to surface:</b> <span id="statReturns">0</span></div>
+      <div><b>Total mining upgrades purchased:</b> <span id="statMiningUpgBought">0</span></div>
+
+      <div style="height:10px;"></div>
+
+      <div><b>Total damage dealt:</b> <span id="statDamageDealt">0</span></div>
+      <div><b>Last weapon used:</b> <span id="statLastWeapon">None</span></div>
+      <div><b>Total battle upgrades purchased:</b> <span id="statBattleUpgBought">0</span></div>
+    </div>
+  </div>
+
+  <!-- Discord link centered below the stats container -->
+  <a
+    href="https://discord.gg/E6SpGKvX"
+    target="_blank"
+    rel="noopener noreferrer"
+    style="
+      position:absolute;
+      top:100%;
+      left:50%;
+      transform:translateX(-50%);
+      margin-top:24px;
+      font-size:16px;
+      color:#4aa3ff;
+      text-decoration:underline;
+      white-space:nowrap;
+    "
+  >
+    Join the Discord!
+  </a>
+
+</div>
+</div>
+</div>
+
+    <div id="dragonModal" class="modal" onclick="closeDragonModal(event)">
+      <div style="background:#1f1f3f; padding:12px; border-radius:12px; border:2px solid #3f3f7f;">
+        <div id="dragonFightTimer"
+  style="text-align:center;font-size:16px;font-weight:bold;margin-bottom:6px;color:#eee;">
+  Time left: 60s
+</div>
+        <div id="manaBarContainer" style="
+        width: 300px;
+        height: 20px;
+        background: #1b2a55;
+        border-radius: 10px;
+        margin: 0 auto 8px;
+        overflow: hidden;
+        position: relative;
+      ">      
+  <div id="manaBarFill" style="
+    height: 100%;
+    width: 100%;
+    background: #00cfff;
+  "></div>
+  <div id="manaBarText" style="
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: black;
+    pointer-events: none;
+  ">
+    Mana: 100 / 100
+  </div>
+</div>
+        <canvas id="dragonCanvas" width="600" height="300"></canvas>
+
+        <div id="poisonInfo" style="
+          text-align:center;
+          color:#63d047;
+          font-size:14px;
+          margin-top:6px;
+          display:none;
+          ">
+        </div>
+    
+        <div style="display:flex; justify-content:space-between; margin-top:10px; font-size:14px;">
+          <div>
+            <strong>Player</strong><br>
+            HP: <span id="battlePlayerHP">100</span><br>
+            Damage: <span id="battlePlayerDamage">10</span><br>
+            <span id="battlePlayerFreeze" style="display:none">
+              Freeze: <span></span>%<br>
+            </span>
+            <span id="battlePlayerPoison" style="display:none">
+              Poison: <span></span>%<br>
+            </span>
+          </div>
+          
+          <div>
+            <strong>Dragon</strong><br>
+            HP: <span id="battleDragonHP">100</span><br>
+            Damage: <span id="battleDragonDamage">10</span><br>
+            <span id="battleDragonFreeze" style="display:none">
+              Freeze: <span></span>%<br>
+            </span>
+            <span id="battleDragonPoison" style="display:none">
+              Poison: <span></span>%<br>
+            </span>
+          </div>          
+        </div>
+      </div>
+    </div>    
+      
+      <div id="weaponTooltip" class="weapon-tooltip"></div>
+
+      <div id="autosaveCountdown" style="
+      position: fixed;
+      left: 12px;
+      bottom: 10px;
+      font-size: 12px;
+      color: #aaa;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 6px 8px;
+      border-radius: 8px;
+      z-index: 3000;
+      user-select: none;
+      display: none;
+      cursor: pointer;
+    "></div>
+
+<div id="autosaveSavedToast" style="
+position: fixed;
+left: 120px;
+bottom: 10px;
+font-size: 12px;
+color: #4cff6a;
+opacity: 0;
+transition: opacity 0.25s ease;
+pointer-events: none;
+z-index: 3001;
+margin-left: 7px;
+margin-bottom: 7px;
+">
+Game Saved!
+</div>
+
+<!-- Intro Modal (shows once) -->
+<div id="introModal" class="intro-modal">
+  <div class="intro-modal-content">
+    <h2 style="margin-top:0;">Welcome to Dracremental!</h2>
+
+    <div id="introModalScroll" class="intro-modal-scroll">
+      <p>Thank you so much for checking out my game! What you're about to see is the culmination of weeks of dedication to create my first actual idle/incremental game. This is something I've always wanted to do, and it means a lot to me that it's finally a reality.</p>
+      <p>Once starting, you may find that the game is REALLY slow, since you can only draw a card every hour and can't do much else besides that. This is intentional, and I promise there are a lot more features to come! This was meant to be the kind of game where you don't need to be too active, and it wouldn't take up too much of a player's time.</p>
+      <p>I want to mention that there are some features in this game that do not update in the background, and even more that don't update with offline progress. I want to sincerely apologize for this—I really did try to incorporate a function that would allow everything to update with background/offline progress, but nothing seemed to work perfectly. To make idle progress work to its fullest extent, I suggest keeping the game open in a background window.</p>
+      <p>As previously mentioned, this is my first ever real game! That being said, it is more than likely that there are some bugs or inaccuracies that could occur while playing normally. If you catch anything, please let me know on Galaxy or through the Discord, and I will try my best to resolve the issue!</p>
+      <p>Alright, enough yapping—go ahead and start the game!</p>
+    </div>
+
+    <button id="enterGameBtn">Enter the Game!</button>
+  </div>
+</div>
+
+<!-- Help Button (bottom-right) -->
+<button id="helpBtn" aria-label="Help">?</button>
+
+<!-- Help Modal -->
+<div id="helpModal" class="intro-modal">
+  <div class="intro-modal-content">
+    <h2 id="helpModalTitle" style="margin-top:0;">Help</h2>
+
+    <div id="helpModalScroll" class="intro-modal-scroll"></div>
+
+    <button id="closeHelpBtn">I understand, thank you!</button>
+  </div>
+</div>
+
+<script>
+
+/* ---------------- PLAYER ---------------- */
+let playerLevel = 1;
+let playerXP = 0;
+let nextPlayerLevelXP = 10000;
+let spicyPeppers = 0;
+let playerName = ""; // displayed name
+function randomSixDigits() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+function makeDefaultName() {
+  return "Player" + randomSixDigits();
+}
+let dragonLevel = 1;
+let dragonHP = 0;
+let dragonDamage = 0;
+let dragonsDefeated = 0;
+let cardsExpected = 0;
+
+// --- Tab unlocks + one-time glow ---
+let miningTabUnlocked = false;
+let dragonTabUnlocked = false;
+
+let miningTabGlowDismissed = false; // once true, never glow again
+let dragonTabGlowDismissed = false;
+
+let hasSeenIntroModal = false;
+
+/* ---------------- CARDS ---------------- */
+const cards = [];
+const ownedCards = {};
+let selectedModalCard = null;
+
+let keysOwned = 0;
+// ---- MINING INIT GUARD ----
+let miningClaimedCounts = [];   // declared early so it's safe to reference
+let miningInitialized = false;  // becomes true once ORES exists and counts are sized
+
+const achievements = [
+  { id: 1,  name: "Card Collector",  desc: "Draw 5 total cards",               claimed: false, notified: false, check: () => stats.totalCardsOpened >= 5 },
+  { id: 2,  name: "That Was Simple",  desc: "Reach Level 7",                    claimed: false, notified: false, check: () => playerLevel >= 7 },
+  { id: 3,  name: "New Features?!",  desc: "Unlock mining",                    claimed: false, notified: false, check: () => playerLevel >= 15 },
+  { id: 4,  name: "Luck-Based",  desc: "Get a 4-star card or better",      claimed: false, notified: false, check: () => stats.highestCardStars >= 4 },
+  { id: 5,  name: "The Shiny...",  desc: "Mine your first gem",              claimed: false, notified: false, check: () => stats.totalGemsGained >= 1 },
+
+  { id: 6,  name: "It's Useful, Trust Me",  desc: "Return to the surface first time", claimed: false, notified: false, check: () => stats.timesReturnedToSurface >= 1 },
+  { id: 7,  name: "Teenage Dirtbag",  desc: "Have dirt multiplier x50",         claimed: false, notified: false, check: () => getMiningUpgradeEffect("dirtGain") >= 50 },
+  { id: 8,  name: "It's Still Going?",  desc: "Reach Level 25",                   claimed: false, notified: false, check: () => playerLevel >= 25 },
+  { id: 9,  name: "Two-Thirds",  desc: "Have 30 unique cards",             claimed: false, notified: false, check: () => stats.cardsUnlocked >= 30 },
+  { id: 10, name: "New Best Friend", desc: "Unlock the autominer",             claimed: false, notified: false, check: () => autominerUnlocked },
+
+  { id: 11, name: "To The Mantle", desc: "Reach depth 400",                  claimed: false, notified: false, check: () => miningMaxDepthReached >= 400 },
+  { id: 12, name: "These Are Heavy...", desc: "Get key chance to 2.0%",           claimed: false, notified: false, check: () => getMiningUpgradeEffect("keyChance") >= 0.02 },
+  { id: 13, name: "Take That!", desc: "Defeat your first dragon",         claimed: false, notified: false, check: () => dragonsDefeated >= 1 },
+  { id: 14, name: "Training Regiment", desc: "Buy 50 battle upgrades",           claimed: false, notified: false, check: () => stats.totalBattleUpgradesPurchased >= 50 },
+  { id: 15, name: "I Am Inevitable", desc: "Discover all gems",                claimed: false, notified: false, check: () => miningClaimedCounts.every(c => c > 0) },
+
+  { id: 16, name: "Billionaire", desc: "Gem product over 1e9",             claimed: false, notified: false, check: () => getGemProduct() > 1e9 },
+  { id: 17, name: "Valiant Soldier", desc: "Defeat 20 dragons",                claimed: false, notified: false, check: () => dragonsDefeated >= 20 },
+  { id: 18, name: "It's About Time", desc: "Unlock all cards",                 claimed: false, notified: false, check: () => stats.cardsUnlocked >= 45 },
+  { id: 19, name: "California Ghost", desc: "Get a card to Level 10",           claimed: false, notified: false, check: () => stats.highestCardLevel >= 10 },
+  { id: 20, name: "That's All, Folks", desc: "Reach Level 100",                  claimed: false, notified: false, check: () => playerLevel >= 100 }
+];
+
+let id = 1;
+const rarities = [
+  { stars: 1, count: 9, weight: 254 },
+  { stars: 2, count: 9, weight: 64 },
+  { stars: 3, count: 9, weight: 16 },
+  { stars: 4, count: 9, weight: 5 },
+  { stars: 5, count: 9, weight: 2 }
+];
+
+// Build card list
+rarities.forEach(r => {
+  for (let i = 0; i < r.count; i++) {
+    cards.push({
+      id,
+      stars: r.stars,
+      weight: r.weight,
+      image: `images/card_${id}.png`
+    });
+    id++;
+  }
+});
+
+/* ---------------- SETTINGS + SAVE SYSTEM ---------------- */
+
+const SAVE_KEY = "dracremental_save_v1";
+
+const AUTOSAVE_OPTIONS = [5, 10, 30, 60, 0]; // 0 = Never
+const SCI_START_OPTIONS = [1e3, 1e4, 1e5, 1e6, 1e7, 1e8, 1e9];
+
+let settings = {
+  autosaveSeconds: 30,              // 5/10/30/60/0
+  offlineProgress: true,
+  sciStart: 1e6,                    // threshold for scientific formatting
+  optimizeDragonFighting: false,
+  miningColorblindMode: false,
+  showLevelInChat: true,  // placeholder for later
+  topContainerOpacity: 100,
+};
+
+let autosaveTimer = null;
+let autosaveCountdownTimer = null;
+let nextAutosaveAt = null;
+
+let cardCooldownRemaining = 0; // seconds remaining
+let lastCardCooldownTick = performance.now();
+
+let stats = {
+  // Time
+  firstPlayedMs: 0,        // set once, survives reload, resets on hard reset
+  totalPlaySeconds: 0,     // increments while the game is open
+
+  // Coming later
+  achievementsCompleted: 0,
+  chatMessagesSent: 0,
+
+  // Cards
+  totalCardsOpened: 0,
+  cardsUnlocked: 0,
+  totalXPGained: 0,
+  totalCardLevelUps: 0,
+  totalSpicyPeppersGained: 0,
+
+  // Mining
+  totalDirtGained: 0,
+  totalGemsGained: 0,
+  totalKeysGained: 0,
+  deepestDepthReached: 0,
+  timesReturnedToSurface: 0,
+  totalMiningUpgradesPurchased: 0,
+
+  // Combat
+  totalDamageDealt: 0,
+  lastWeaponUsed: "None",
+  totalBattleUpgradesPurchased: 0,
+
+  // Extras
+  highestCardStars: 0,
+  highestCardLevel: 0,
+};
+
+let __lastPlayTickMs = performance.now();
+
+function startPlaytimeLoop() {
+  __lastPlayTickMs = performance.now();
+
+  setInterval(() => {
+    const now = performance.now();
+    const deltaSec = Math.max(0, (now - __lastPlayTickMs) / 1000);
+    __lastPlayTickMs = now;
+
+    stats.totalPlaySeconds += deltaSec;
+
+    // keep deepest depth updated (miningDepth can be 0 bubble)
+    stats.deepestDepthReached = Math.max(stats.deepestDepthReached, miningMaxDepthReached || 0);
+
+    updateStatsUI();
+  }, 250);
+}
+
+function nowMs() { return Date.now(); }
+
+/** Number formatting used across the entire game */
+function formatNumber(n) {
+  n = Number(n) || 0;
+  const abs = Math.abs(n);
+
+  // Normal numbers
+  if (abs < settings.sciStart) {
+    if (Number.isInteger(n)) return String(n);
+    return (Math.round(n * 100) / 100).toString();
+  }
+
+  // Scientific notation — always 2 decimal places
+  // Example: 1.23e7
+  return n.toExponential(2).replace("+", "");
+}
+
+function formatDHMS(totalSeconds) {
+  totalSeconds = Math.floor(Math.max(0, totalSeconds));
+  const days = Math.floor(totalSeconds / 86400);
+  totalSeconds %= 86400;
+  const hours = Math.floor(totalSeconds / 3600);
+  totalSeconds %= 3600;
+  const mins = Math.floor(totalSeconds / 60);
+  const secs = totalSeconds % 60;
+
+  return `${days}d ${String(hours).padStart(2,"0")}:${String(mins).padStart(2,"0")}:${String(secs).padStart(2,"0")}`;
+}
+
+function setStat(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function updateStatsUI() {
+  setStat("statTimeDHMS", formatDHMS(stats.totalPlaySeconds));
+  setStat("statTimeSeconds", formatNumber(Math.floor(stats.totalPlaySeconds)));
+
+  setStat("statAchievements", formatNumber(stats.achievementsCompleted));
+  setStat("statChatMessages", formatNumber(stats.chatMessagesSent));
+
+  setStat("statCardsOpened", formatNumber(stats.totalCardsOpened));
+  setStat("statCardsUnlocked", formatNumber(stats.cardsUnlocked));
+  setStat("statTotalXPGained", formatNumber(Math.floor(stats.totalXPGained)));
+  setStat("statCardLevelUps", formatNumber(stats.totalCardLevelUps));
+  setStat("statSpicyGained", formatNumber(stats.totalSpicyPeppersGained));
+
+  setStat("statDirtGained", formatNumber(Math.floor(stats.totalDirtGained)));
+  setStat("statGemsGained", formatNumber(stats.totalGemsGained));
+  setStat("statKeysGained", formatNumber(stats.totalKeysGained));
+  setStat("statDeepestDepth", formatNumber(stats.deepestDepthReached));
+  setStat("statReturns", formatNumber(stats.timesReturnedToSurface));
+  setStat("statMiningUpgBought", formatNumber(stats.totalMiningUpgradesPurchased));
+
+  setStat("statDamageDealt", formatNumber(Math.floor(stats.totalDamageDealt)));
+  setStat("statLastWeapon", stats.lastWeaponUsed || "None");
+  setStat("statBattleUpgBought", formatNumber(stats.totalBattleUpgradesPurchased));
+}
+
+/** Save the entire game state */
+function buildSaveObject() {
+  return {
+    t: nowMs(), // save timestamp
+    settings,
+
+    // core
+    playerLevel,
+    playerXP,
+    nextPlayerLevelXP,
+    spicyPeppers,
+    keysOwned,
+
+    // cards
+    ownedCards, // object (serializable)
+    selectedWeapon,
+    dragonsDefeated,
+    dragonLevel,
+
+    // mining
+    miningClaimedCounts,
+    miningRows,
+    miningKeyRows,
+    miningMinedRows,
+    miningViewportTop,
+    miningBubbleRow,
+    miningBubbleActive,
+    miningPlayerCol,
+    miningDepth,
+    miningDirt,
+    miningMaxDepthReached,
+    rubyGuarantee6to10Done,
+
+    // mining upgrades
+    miningUpgradeLevels,
+
+    // autominer
+    autominerUnlocked,
+    autominerActive,
+    autominerStartDepth,
+    autominerDepth,
+    autominerCol,
+
+    playerName,
+    playerColorIndex,
+    battleUpgradeLevels,
+    stats,
+
+    achievements: achievements.map(a => ({
+    claimed: a.claimed,
+    notified: a.notified,
+  })),
+  cardCooldownRemaining,
+  lastCardCooldownTick,
+  returnSurfaceAvailableAt,
+miningCursorDepth,
+miningCursorCol,
+miningActions,
+activeMiningKey,
+autominerCursorDepth,
+autominerCursorCol,
+autominerAction,
+
+miningTabUnlocked,
+dragonTabUnlocked,
+miningTabGlowDismissed,
+dragonTabGlowDismissed,
+
+hasSeenIntroModal,
+  };
+}
+
+function applySaveObject(s) {
+  if (!s) return;
+
+  // settings first (so formatting + toggles apply)
+  if (s.settings) settings = { ...settings, ...s.settings };
+
+  playerLevel = s.playerLevel ?? playerLevel;
+  playerXP = s.playerXP ?? playerXP;
+  nextPlayerLevelXP = s.nextPlayerLevelXP ?? nextPlayerLevelXP;
+  spicyPeppers = s.spicyPeppers ?? spicyPeppers;
+  keysOwned = s.keysOwned ?? keysOwned;
+
+  // cards
+  if (s.ownedCards) {
+    // replace in-place to avoid breaking references
+    for (const k of Object.keys(ownedCards)) delete ownedCards[k];
+    Object.assign(ownedCards, s.ownedCards);
+  }
+
+  selectedWeapon = s.selectedWeapon ?? selectedWeapon;
+  dragonsDefeated = s.dragonsDefeated ?? dragonsDefeated;
+  dragonLevel = s.dragonLevel ?? dragonLevel;
+
+  // mining
+  miningClaimedCounts = s.miningClaimedCounts ?? miningClaimedCounts;
+  if (Array.isArray(miningClaimedCounts) && miningInitialized) {
+    // ensure correct length (in case ORES changed)
+    while (miningClaimedCounts.length < ORES.length) miningClaimedCounts.push(0);
+  }
+
+  // These arrays can get big; only load if present
+  if (Array.isArray(s.miningRows)) {
+    miningRows.length = 0; miningRows.push(...s.miningRows);
+  }
+  if (Array.isArray(s.miningKeyRows)) {
+    miningKeyRows.length = 0; miningKeyRows.push(...s.miningKeyRows);
+  }
+  if (Array.isArray(s.miningMinedRows)) {
+    miningMinedRows.length = 0; miningMinedRows.push(...s.miningMinedRows);
+  }
+
+  miningViewportTop = s.miningViewportTop ?? miningViewportTop;
+  if (Array.isArray(s.miningBubbleRow)) {
+    for (let i = 0; i < GRID_COLS; i++) miningBubbleRow[i] = s.miningBubbleRow[i] ?? null;
+  }
+  miningBubbleActive = s.miningBubbleActive ?? miningBubbleActive;
+  miningPlayerCol = s.miningPlayerCol ?? miningPlayerCol;
+  miningDepth = s.miningDepth ?? miningDepth;
+  miningDirt = s.miningDirt ?? miningDirt;
+  miningMaxDepthReached = s.miningMaxDepthReached ?? miningMaxDepthReached;
+  rubyGuarantee6to10Done = s.rubyGuarantee6to10Done ?? rubyGuarantee6to10Done;
+
+  // mining upgrades
+  if (s.miningUpgradeLevels) miningUpgradeLevels = { ...miningUpgradeLevels, ...s.miningUpgradeLevels };
+
+  // autominer
+  autominerUnlocked = !!s.autominerUnlocked;
+  autominerActive = !!s.autominerActive;
+  autominerStartDepth = s.autominerStartDepth ?? autominerStartDepth;
+  autominerDepth = s.autominerDepth ?? autominerDepth;
+  autominerCol = s.autominerCol ?? autominerCol;
+
+  playerName = s.playerName ?? playerName;
+  playerColorIndex = s.playerColorIndex ?? playerColorIndex;
+
+if (s.battleUpgradeLevels) {
+  battleUpgradeLevels = { ...battleUpgradeLevels, ...s.battleUpgradeLevels };
+}
+
+if (s.stats) {
+  stats = { ...stats, ...s.stats };
+}
+
+cardCooldownRemaining = s.cardCooldownRemaining ?? 0;
+lastCardCooldownTick = Date.now();
+returnSurfaceAvailableAt = s.returnSurfaceAvailableAt ?? 0;
+
+miningCursorDepth = s.miningCursorDepth ?? miningDepth;
+miningCursorCol   = s.miningCursorCol   ?? miningPlayerCol;
+
+miningActions   = s.miningActions ?? {};
+activeMiningKey = s.activeMiningKey ?? null;
+
+autominerCursorDepth = s.autominerCursorDepth ?? autominerDepth;
+autominerCursorCol   = s.autominerCursorCol   ?? autominerCol;
+autominerAction      = s.autominerAction ?? null;
+
+miningTabUnlocked = !!s.miningTabUnlocked;
+dragonTabUnlocked = !!s.dragonTabUnlocked;
+
+miningTabGlowDismissed = !!s.miningTabGlowDismissed;
+dragonTabGlowDismissed = !!s.dragonTabGlowDismissed;
+
+hasSeenIntroModal = !!s.hasSeenIntroModal;
+
+// reflect loaded name into the input + labels
+const nameInput = document.getElementById("playerNameInput");
+if (nameInput && playerName) nameInput.value = playerName;
+
+updatePlayerIcon();
+updateDragonTabLabels();
+applyBattleUpgradesToStats();
+recalcDragonStats();        // important because unscaling changes dragonHP/dragonDamage
+renderBattleUpgrades();
+
+  // if autominer loaded active, restart timer safely
+  if (autominerUnlocked && autominerActive) startAutominer();
+  else stopAutominer();
+
+  if (Array.isArray(s.achievements)) {
+  achievements.forEach((a, i) => {
+    if (s.achievements[i]) {
+      a.claimed = s.achievements[i].claimed;
+      a.notified = s.achievements[i].notified;
+    }
+  });
+}
+}
+
+function updateTabUnlocksUI() {
+  const miningBtn = document.getElementById("miningTabBtn");
+  const dragonBtn = document.getElementById("dragonTabBtn");
+  if (!miningBtn || !dragonBtn) return;
+
+  // Unlock conditions
+  const shouldUnlockMining = playerLevel >= 15;
+  const shouldUnlockDragon = spicyPeppers >= 1000;
+
+  // Detect first-time unlock transitions (for glow)
+  if (!miningTabUnlocked && shouldUnlockMining) {
+    miningTabUnlocked = true;
+    if (!miningTabGlowDismissed) miningBtn.classList.add("tabButtonGlow");
+    saveGame(false);
+  }
+  if (!dragonTabUnlocked && shouldUnlockDragon) {
+    dragonTabUnlocked = true;
+    if (!dragonTabGlowDismissed) dragonBtn.classList.add("tabButtonGlow");
+    saveGame(false);
+  }
+
+  // Apply locked/unlocked button state + text
+  if (!miningTabUnlocked) {
+    miningBtn.disabled = true;
+    miningBtn.textContent = "???";
+    miningBtn.classList.remove("tabButtonGlow");
+  } else {
+    miningBtn.disabled = false;
+    miningBtn.textContent = "Mining";
+    if (miningTabGlowDismissed) miningBtn.classList.remove("tabButtonGlow");
+  }
+
+  if (!dragonTabUnlocked) {
+    dragonBtn.disabled = true;
+    dragonBtn.textContent = "???";
+    dragonBtn.classList.remove("tabButtonGlow");
+  } else {
+    dragonBtn.disabled = false;
+    dragonBtn.textContent = "Dragon";
+    if (dragonTabGlowDismissed) dragonBtn.classList.remove("tabButtonGlow");
+  }
+}
+
+if (!stats.firstPlayedMs) stats.firstPlayedMs = nowMs();
+
+function saveGame(showToast = false) {
+  const data = buildSaveObject();
+  localStorage.setItem(SAVE_KEY, JSON.stringify(data));
+
+  if (showToast) showGameSavedToast();
+
+  // update offline timestamp
+  nextAutosaveAt = computeNextAutosaveTime();
+}
+
+function loadGame() {
+  const raw = localStorage.getItem(SAVE_KEY);
+  if (!raw) {
+    applyAllSettings();
+    if (!stats.firstPlayedMs) stats.firstPlayedMs = nowMs();
+    openIntroModalIfNeeded();
+    return;
+  }
+
+  let s = null;
+  try { s = JSON.parse(raw); } catch { s = null; }
+  if (!s) {
+    applyAllSettings();
+    openIntroModalIfNeeded();
+    return;
+  }
+
+  // Offline progress handling (simple + safe version)
+  // We apply offline progress ONLY if enabled.
+  const lastT = Number(s.t || 0);
+  const offlineSec = Math.max(0, Math.floor((nowMs() - lastT) / 1000));
+
+  applySaveObject(s);
+
+  if (settings.offlineProgress && offlineSec > 0) {
+    // Safe offline: only apply XP gain based on current effective XP/sec.
+    // (No autominer offline, no dragon battle offline)
+    const xpPerSec = effectiveXPPerSecond();
+    const xpGain = xpPerSec * offlineSec;
+    gainXP(xpGain);
+  }
+
+  applyAllSettings();
+  openIntroModalIfNeeded();
+}
+
+function hardReset() {
+  const ok1 = confirm("Are you REALLY sure you want to reset the game?");
+  if (!ok1) return;
+  const ok2 = confirm("Last chance! Pleeeeease think about it...this cannot be undone");
+  if (!ok1 || !ok2) return;
+
+  localStorage.removeItem(SAVE_KEY);
+
+  location.reload();
+}
+
+/* ----- Autosave scheduling + countdown ----- */
+
+function computeNextAutosaveTime() {
+  if (!settings.autosaveSeconds || settings.autosaveSeconds <= 0) return null;
+  return nowMs() + settings.autosaveSeconds * 1000;
+}
+
+function updateAutosaveCountdownUI() {
+  const el = document.getElementById("autosaveCountdown");
+  if (!el) return;
+
+  if (!nextAutosaveAt) {
+    el.style.display = "none";
+    return;
+  }
+
+  const msLeft = Math.max(0, nextAutosaveAt - nowMs());
+  const secLeft = Math.ceil(msLeft / 1000);
+
+  el.style.display = "block";
+  el.textContent = `Autosave in: ${secLeft}s`;
+}
+
+function startAutosaveSystem() {
+  // clear old
+  if (autosaveTimer) clearInterval(autosaveTimer);
+  if (autosaveCountdownTimer) clearInterval(autosaveCountdownTimer);
+  autosaveTimer = null;
+  autosaveCountdownTimer = null;
+
+  nextAutosaveAt = computeNextAutosaveTime();
+
+  // countdown updates every 250ms so it feels responsive
+  autosaveCountdownTimer = setInterval(updateAutosaveCountdownUI, 250);
+
+  if (!nextAutosaveAt) {
+    updateAutosaveCountdownUI();
+    return;
+  }
+
+  autosaveTimer = setInterval(() => {
+    // if autosave disabled mid-flight
+    if (!settings.autosaveSeconds || settings.autosaveSeconds <= 0) return;
+    const input = document.getElementById("playerNameInput");
+    if (input) setPlayerName(input.value.trim() || playerName);
+
+    saveGame(false);
+    nextAutosaveAt = computeNextAutosaveTime();
+  }, settings.autosaveSeconds * 1000);
+
+  // Click autosave countdown to manually save
+  const autosaveEl = document.getElementById("autosaveCountdown");
+const autosaveToast = document.getElementById("autosaveSavedToast");
+
+if (autosaveEl) {
+  autosaveEl.addEventListener("click", () => {
+    saveGame(false); // save silently (we'll show our own toast)
+
+    if (autosaveToast) {
+      autosaveToast.style.opacity = "1";
+      setTimeout(() => {
+        autosaveToast.style.opacity = "0";
+      }, 1200);
+    }
+  });
+}
+}
+
+let saveToastTimer = null;
+function showGameSavedToast() {
+  const settingsTab = document.getElementById("settingsTab");
+  const el = document.getElementById("manualSaveToast");
+  if (!el) return;
+
+  el.style.opacity = "1";
+  el.style.color = "#4caf50";
+  el.textContent = "Game Saved!";
+
+  if (saveToastTimer) clearTimeout(saveToastTimer);
+  saveToastTimer = setTimeout(() => {
+    el.style.opacity = "0";
+  }, 3000);
+}
+
+function initSettingsUI() {
+  const autosaveTitle = document.getElementById("autosaveTitle");
+  const autosaveLabel = document.getElementById("autosaveLabel");
+
+  const offlineToggle = document.getElementById("offlineToggle");
+  const sciSlider = document.getElementById("sciSlider");
+  const sciTitle = document.getElementById("sciTitle");
+
+  const dragonOptToggle = document.getElementById("dragonOptToggle");
+  const cbMiningToggle = document.getElementById("cbMiningToggle");
+  const showLevelChatToggle= document.getElementById("showLevelChatToggle");
+
+  // --- Top container opacity ---
+const opacitySlider = document.getElementById("opacitySlider");
+const opacityTitle = document.getElementById("opacityTitle");
+
+function updateOpacityLabel() {
+  opacityTitle.textContent =
+    `Top Container Opacity: ${settings.topContainerOpacity}%`;
+}
+
+if (opacitySlider) {
+  opacitySlider.value = settings.topContainerOpacity;
+  updateOpacityLabel();
+
+  opacitySlider.addEventListener("input", () => {
+    settings.topContainerOpacity = Number(opacitySlider.value);
+    updateOpacityLabel();
+    applyAllSettings();
+    saveGame(false);
+  });
+}
+
+  // --- Autosave ---
+  function autosaveIndexFromSeconds(sec) {
+    const idx = AUTOSAVE_OPTIONS.indexOf(sec);
+    return idx >= 0 ? idx : 2; // default 30s
+  }
+  function updateAutosaveLabel() {
+  const sec = settings.autosaveSeconds;
+  const text = (sec === 0) ? "Never" : `${sec}s`;
+  autosaveTitle.textContent = `Autosave Interval: ${text}`;
+}
+  if (autosaveSlider) {
+    autosaveSlider.value = String(autosaveIndexFromSeconds(settings.autosaveSeconds));
+    updateAutosaveLabel();
+
+    autosaveSlider.addEventListener("input", () => {
+      const idx = Number(autosaveSlider.value);
+      settings.autosaveSeconds = AUTOSAVE_OPTIONS[idx] ?? 30;
+      updateAutosaveLabel();
+      applyAllSettings();
+      saveGame(false);
+    });
+  }
+
+  // --- Offline progress ---
+  if (offlineToggle) {
+    offlineToggle.checked = !!settings.offlineProgress;
+    offlineToggle.addEventListener("change", () => {
+      settings.offlineProgress = !!offlineToggle.checked;
+      applyAllSettings();
+      saveGame(false);
+    });
+  }
+
+  // --- Scientific threshold ---
+  function sciIndexFromValue(v) {
+    const idx = SCI_START_OPTIONS.indexOf(v);
+    return idx >= 0 ? idx : 3; // default 1e6
+  }
+  function updateSciLabel() {
+  const v = settings.sciStart;
+  sciTitle.textContent = `Start scientific notation at: 1e${Math.log10(v)}`;
+}
+  if (sciSlider) {
+    sciSlider.value = String(sciIndexFromValue(settings.sciStart));
+    updateSciLabel();
+
+    sciSlider.addEventListener("input", () => {
+      const idx = Number(sciSlider.value);
+      settings.sciStart = SCI_START_OPTIONS[idx] ?? 1e6;
+      updateSciLabel();
+      applyAllSettings();
+      saveGame(false);
+    });
+  }
+
+  // --- Dragon optimize ---
+  if (dragonOptToggle) {
+    dragonOptToggle.checked = !!settings.optimizeDragonFighting;
+    dragonOptToggle.addEventListener("change", () => {
+      settings.optimizeDragonFighting = !!dragonOptToggle.checked;
+      applyAllSettings();
+      saveGame(false);
+    });
+  }
+
+  // --- Mining colorblind ---
+  if (cbMiningToggle) {
+    cbMiningToggle.checked = !!settings.miningColorblindMode;
+    cbMiningToggle.addEventListener("change", () => {
+      settings.miningColorblindMode = !!cbMiningToggle.checked;
+      applyAllSettings();
+      saveGame(false);
+    });
+  }
+
+  // --- Chat notifications ---
+if (showLevelChatToggle) {
+  showLevelChatToggle.checked = settings.showLevelInChat;
+  showLevelChatToggle.addEventListener("change", () => {
+    settings.showLevelInChat = showLevelChatToggle.checked;
+    applyAllSettings();
+    saveGame(false);
+  });
+}
+}
+
+function applyAllSettings() {
+  // Apply dragon optimize toggle
+  document.body.classList.toggle("dragon-optimized", !!settings.optimizeDragonFighting);
+
+  // Apply mining colorblind toggle (render uses this)
+  // Just re-render mining if needed
+  if (window.currentTab === "mining") renderMiningAll();
+
+  // restart autosave system whenever settings change
+  startAutosaveSystem();
+
+  // update any UI that displays formatted numbers
+  updatePlayerUI();
+  if (window.currentTab === "mining") renderMiningAll();
+
+  // Apply top container opacity
+const opacity = settings.topContainerOpacity / 100;
+
+const tabHeader = document.getElementById("tabHeader");
+const playerStats = document.getElementById("playerStatsContainer");
+
+if (tabHeader) tabHeader.style.opacity = opacity;
+if (playerStats) playerStats.style.opacity = opacity;
+renderGallery();
+updateModal();
+updateTabUnlocksUI();
+}
+
+function openIntroModalIfNeeded() {
+  const modal = document.getElementById("introModal");
+  const btn = document.getElementById("enterGameBtn");
+  if (!modal || !btn) return;
+
+  // Show only if not seen yet
+  if (hasSeenIntroModal) {
+    modal.style.display = "none";
+    return;
+  }
+
+  modal.style.display = "flex";
+
+  // Ensure the only close method is the button
+  btn.onclick = () => {
+    hasSeenIntroModal = true;
+    modal.style.display = "none";
+    saveGame(false); // persist "seen" state
+  };
+}
+
+document.addEventListener("keydown", (e) => {
+  const modal = document.getElementById("introModal");
+  if (modal && modal.style.display === "flex" && e.key === "Escape") {
+    e.preventDefault();
+  }
+}, true);
+
+function getHelpContentForTab(tabName) {
+  // Returns: { title: string, paragraphs: string[] }
+  switch (tabName) {
+    case "cards":
+      return {
+        title: "Help — Cards",
+        paragraphs: [
+          "You can draw cards by clicking the \"Select 1 Cards\" button at the top. This will randomly give you one of 45 possible cards to collect, weighted by rarity.",
+          "There are five rarities of cards, ranging from one-star to five-star. Roughly, each rarity is 4x less likely to be obtained than the previous, with some exceptions at higher rarities.",
+          "Each card passively generates XP over time, with higher rarity cards generating more XP. Some higher-rarity cards are nerfed until a certain player level and will increase their XP/sec as you level up.",
+          "You can also level up each card individually by collecting duplicates of it. Once you have enough duplicates, you can level the card up to increase its XP production. Each level-up provides a certain amount of Spicy Peppers.",
+          "You can click on a card to view its modal, which displays a lot of useful information about the card.",
+          "<b><span style='color:#00efef;'>Note: Mining will unlock at Player Level 15</span></b>" 
+        ]
+      };
+
+    case "mining":
+      return {
+        title: "Help — Mining",
+        paragraphs: [
+          "Congratulations on unlocking Mining! Here, you can collect gems, which provide a multiplier to your total XP gain, thus helping you increase your level even further.",
+          "Use the arrow keys to mine. This right here is a test to make sure Pages is updating properly. With the exception of the top row, mining cells takes time based on the depth of the cell, and rarer gems take longer to mine as well. If you leave a cell while the timer is running to go mine another cell, the timer on the cell you were mining will be preserved.",
+          "In general, each gem is 4x rarer then the previous. The way this works is that each cell has a base chance of being a ruby (+0.05% per depth), and each gem has a 25% chance of being promoted into the next gem. Also, it is guaranteed that at least one gem will spawn in depths 6-10, because what fun would it be if you unlocked mining and saw a grid full of dirt? :3",
+          "You can use dirt to buy upgrades. The first two upgrades can be bought infinitely, and the last two can be bought 15 times each. (Tip: Since the first row mines instantly, this is a great way to earn dirt early on!)",
+          "Your gem product is calculated by adding one to all of your gem counts, then multiplying them together. This product is then plugged into the log base to get your final XP multiplier.",
+          "Collecting a key allows you to draw another card, without having to wait for the timer. Each cell has a 0.5% chance of spawning a key, and this can be upgraded all the way to 2.0%!",
+          "The Teleport button will teleport you to a random mined square on the depth you choose. You cannot teleport to a depth that you have not yet reached!",
+          "The Return to Surface button is useful because it allows you to get more dirt (and gems that appear at shallower depths) after all of the easily mined cells are gone. I recommending using it when mining progress seems really slow, and there aren't any nearby gems.",
+          "When your gem product reaches 1,000,000 (1e6), you will unlock the autominer who automatically mines cells for you! You can set its starting depth with the button below. Once active, the autominer will start mining cells from left to right until it reaches your max depth or the current cell that you're on. Leaving the autominer on at relatively shallow depths can be a great way to passively earn extra dirt.",
+          "<b><span style='color:#00efef;'>Note: Dragon will unlock at 1000 Spicy Peppers</span></b>"
+        ]
+      };
+
+    case "dragon":
+      return {
+        title: "Help — Dragon",
+        paragraphs: [
+          "Congratulations on unlocking Dragon! Seriously, thank you for sticking around this long, it means so much to me. Here, you can fight dragons for a variety of different bonuses!",
+          "If you're looking at this help modal right after you unlocked the tab, the first thing you should do is spend your hard-earned spicy peppers on battle upgrades. I recommend spending all of them on the first two upgrades at first, with a slight favor toward the second one.",
+          "Before you fight the dragon, you must select a weapon. You can hover over the buttons to see their effects—I tried to make all of the weapons equally powerful, but there might inevitably be some that are better than others. Feel free to experiment and find your favorite!",
+          "<h3>Controls:</h3>",
+          "<ul style='margin:8px 0 0 0; padding:0; line-height:1.5; list-style-position:inside;'>" +
+          "<li>Left Arrow—Move Left" +
+          "<li>Right Arrow—Move Right" +
+          "<li>Up Arrow—Jump" +
+          "<li>Down Arrow—Drop through a platform (this was so hard to code lol)" +
+          "<li>F key—Fire projectile (in the direction of your cursor)" +
+          "</ul>",
+          "When you defeat a dragon, the next one will spawn with twice the HP and damage of the previous dragon. Based on the total number of dragons you have defeated, you will earn the following rewards:",
+          "<ul style='margin:8px 0 0 0; padding:0; line-height:1.5; list-style-position:inside;'>" +
+          "<li>Multiply your XP gain (this formula is actually an exponent, raising your total XP/sec ^+0.01 per dragon, but it's displayed as a multiplier that increases as your base XP/sec increases.)" +
+          "<li>Claim multiple cards at once (1.1^(dragons defeated))" +
+          "<li>Multiply gem gain (1.15^(dragons defeated))" +
+          "</ul>",
+          "If you're experiencing lag, try turning on the \"Optimize dragon fighting\" setting, it may help a little!",
+        ]
+      };
+
+    case "achievements":
+      return {
+        title: "Help — Achievements",
+        paragraphs: [
+          "Achievements, as in most games, are a good indicator of the progress you've made. Completing an achievement will cause a pop-up to appear at the top of the screen, and clicking the \"Claim\" button will claim the award.",
+          "Completing all achievements should generally be considered completing the game, but there is likely more progress that can be made after that point! (Note: It's very likely that these achievements will not be completed in order)",
+          "Feel free to send in the Discord if you've completed a certain achievement! I was originally going to have a chat function that displayed when players completed achievements, but I decided to scrap it lol. Also, if you can think of better names for any of the achievements, I'd love to hear them!"
+        ]
+      };
+
+    case "settings":
+      return {
+        title: "Help — Settings/Stats",
+        paragraphs: [
+          "Here, you can change a few settings that I thought might be useful, as well as see a few interesting statistics! Let me know if you want me to add any others!",
+        ]
+      };
+
+    default:
+      return {
+        title: "Help",
+        paragraphs: [
+          "Placeholder: General help text.",
+          "Placeholder: This help page changes depending on the tab you are on."
+        ]
+      };
+  }
+}
+
+function openHelpModalForCurrentTab() {
+  const helpModal = document.getElementById("helpModal");
+  const titleEl = document.getElementById("helpModalTitle");
+  const scrollEl = document.getElementById("helpModalScroll");
+  const closeBtn = document.getElementById("closeHelpBtn");
+
+  if (!helpModal || !titleEl || !scrollEl || !closeBtn) return;
+
+  // Ensure we always have a current tab
+  const tab = (window.currentTab || "cards");
+
+  // Build content
+  const content = getHelpContentForTab(tab);
+  titleEl.textContent = content.title;
+
+  // Fill paragraphs
+  scrollEl.innerHTML = "";
+  content.paragraphs.forEach(txt => {
+    const p = document.createElement("p");
+    p.innerHTML = txt;
+    scrollEl.appendChild(p);
+  });
+
+  // Show modal
+  helpModal.style.display = "flex";
+
+  // Only way to close = the button
+  closeBtn.onclick = () => {
+    helpModal.style.display = "none";
+  };
+}
+
+function initHelpUI() {
+  const helpBtn = document.getElementById("helpBtn");
+  const helpModal = document.getElementById("helpModal");
+  if (!helpBtn || !helpModal) return;
+
+  helpBtn.addEventListener("click", () => {
+    openHelpModalForCurrentTab();
+  });
+
+  // Prevent click-outside closing (we're not adding overlay click handlers,
+  // but this also blocks any accidental propagation)
+  helpModal.addEventListener("click", (e) => {
+    e.stopPropagation();
+  });
+
+  // Optional: block ESC from closing help if you later add global modal close logic
+  document.addEventListener("keydown", (e) => {
+    if (helpModal.style.display === "flex" && e.key === "Escape") {
+      e.preventDefault();
+    }
+  }, true);
+}
+
+/* ---------------- GAME LOGIC ---------------- */
+
+function showTab(tabName) {
+  window.currentTab = tabName;
+    // Prevent entering locked tabs (extra safety, even though buttons are disabled)
+    if (tabName === "mining" && !miningTabUnlocked) return;
+  if (tabName === "dragon" && !dragonTabUnlocked) return;
+
+  // Dismiss one-time glow on first click
+  if (tabName === "mining" && !miningTabGlowDismissed) {
+    miningTabGlowDismissed = true;
+    const btn = document.getElementById("miningTabBtn");
+    if (btn) btn.classList.remove("tabButtonGlow");
+    saveGame(false);
+  }
+
+  if (tabName === "dragon" && !dragonTabGlowDismissed) {
+    dragonTabGlowDismissed = true;
+    const btn = document.getElementById("dragonTabBtn");
+    if (btn) btn.classList.remove("tabButtonGlow");
+    saveGame(false);
+  }
+
+  // Hide all tabs
+  document.querySelectorAll(".tabContent").forEach(tab => {
+    tab.style.display = "none";
+  });
+
+  // Show selected tab
+  const active = document.getElementById(tabName + "Tab");
+  if (active) active.style.display = "block";
+
+  // Defensive: ensure mining UI is ONLY visible in mining tab
+  const miningSection = document.getElementById("miningGridSection");
+  if (miningSection) {
+    miningSection.style.display = (tabName === "mining") ? "block" : "none";
+  }
+
+  renderBattleUpgrades();
+  if (tabName === "mining") renderMiningAll();
+}
+
+function pullCard() {
+  if (cardCooldownRemaining > 0) return;
+
+  const pulls = Math.max(1, getCardsPerClickExpected());
+
+  let firstCardId = null;
+  let firstWasNew = false;
+
+  for (let i = 0; i < pulls; i++) {
+    const totalWeight = cards.reduce((s, c) => s + c.weight, 0);
+    let roll = Math.random() * totalWeight;
+
+    for (const card of cards) {
+      roll -= card.weight;
+      if (roll <= 0) {
+        const wasNew = obtainCard(card);
+
+        if (firstCardId === null) {
+          firstCardId = card.id;
+          firstWasNew = wasNew;
+        }
+        break;
+      }
+    }
+  }
+
+  // Show the "You got..." message
+  if (firstCardId !== null) {
+    showCardGotMessage(firstCardId, pulls, firstWasNew);
+  }
+
+  cardCooldownRemaining = getCardCooldownDuration();
+  lastCardCooldownTick = Date.now();
+  updateCardCooldownUI(); // nice immediate update
+}
+
+function startCardCooldownLoop() {
+  setInterval(() => {
+    if (cardCooldownRemaining <= 0) return;
+
+    const now = Date.now();
+    const deltaSec = (now - lastCardCooldownTick) / 1000;
+    lastCardCooldownTick = now;
+
+    cardCooldownRemaining = Math.max(0, cardCooldownRemaining - deltaSec);
+
+    updateCardCooldownUI();
+  }, 100);
+}
+
+function drawCardsWithKeys(n) {
+  n = Math.floor(Number(n) || 0);
+  if (n <= 0) return;
+
+  if (keysOwned < n) n = keysOwned;
+  if (n <= 0) return;
+
+  // Spend keys
+  keysOwned -= n;
+
+  let firstCardId = null;
+  let firstWasNew = false;
+
+  for (let i = 0; i < n; i++) {
+    const totalWeight = cards.reduce((s, c) => s + c.weight, 0);
+    let roll = Math.random() * totalWeight;
+
+    for (const card of cards) {
+      roll -= card.weight;
+      if (roll <= 0) {
+        const wasNew = obtainCard(card);
+
+        if (firstCardId === null) {
+          firstCardId = card.id;
+          firstWasNew = wasNew;
+        }
+        break;
+      }
+    }
+  }
+
+  if (firstCardId !== null) {
+    showCardGotMessage(firstCardId, n, firstWasNew);
+  }
+
+  updatePlayerUI();
+  updateKeyDrawButtons();
+}
+
+function getCardCooldownDuration() {
+  const base = 3600; // seconds
+  return base * Math.pow(0.95, playerLevel - 1);
+}
+
+function obtainCard(card) {
+  const wasNew = !ownedCards[card.id];
+
+  if (wasNew) {
+    ownedCards[card.id] = {
+      ...card,
+      level: 1,
+      copies: 0,
+      nextLevelCost: 10
+    };
+    stats.cardsUnlocked += 1;
+  }
+
+  stats.highestCardStars = Math.max(stats.highestCardStars, card.stars);
+
+  ownedCards[card.id].copies++;
+  stats.totalCardsOpened += 1;
+
+  renderGallery();
+  updateModal();
+  saveGame(false);
+
+  return wasNew;
+}
+
+function formatCooldownTime(seconds) {
+  seconds = Math.ceil(Math.max(0, seconds));
+
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+
+  // 1 hour or more → H:MM:SS
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+  }
+
+  // 1 minute or more → M:SS
+  if (m > 0) {
+    return `${m}:${String(s).padStart(2,"0")}`;
+  }
+
+  // Only seconds left
+  return `${s} second${s === 1 ? "" : "s"}`;
+}
+
+function updateCardCooldownUI() {
+  cardsExpected = getCardsPerClickExpected();
+  const btn = document.getElementById("selectCardBtn");
+  if (!btn) return;
+
+  if (cardCooldownRemaining > 0) {
+    btn.disabled = true;
+    btn.textContent = `Select ${cardsExpected} Cards (${formatCooldownTime(cardCooldownRemaining)})`;
+  } else {
+    btn.disabled = false;
+    btn.textContent = `Select ${cardsExpected} Cards`;
+  }
+}
+
+/* ---------------- CARD LEVELING ---------------- */
+
+function canLevelUp(card) {
+  return !!card && (card.copies >= card.nextLevelCost);
+}
+
+function levelUp(card) {
+  if (!canLevelUp(card)) return;
+
+  const peppersGained = spicyPeppersFromLevelUp(card);
+  stats.totalSpicyPeppersGained += peppersGained;
+  stats.totalCardLevelUps += 1;
+  spicyPeppers += peppersGained;
+
+  if (spicyPeppers > 0) {
+    document.getElementById("spicyPepperText").style.display = "block";
+  }
+
+  card.copies -= card.nextLevelCost;
+  card.level++;
+  card.nextLevelCost = Math.floor(card.nextLevelCost * 1.5);
+
+  stats.highestCardLevel = Math.max(
+  stats.highestCardLevel,
+  card.level
+);
+}
+
+function levelUpFromModal() {
+  if (!selectedModalCard) return;
+  levelUp(selectedModalCard);
+  updateModal();
+  renderGallery();
+  renderBattleUpgrades();
+}
+
+function spicyPeppersFromLevelUp(card) {
+  return Math.pow(5, card.stars - 1) * card.level * 10;
+}
+
+function requiredDuplicates(card) {
+  let required = 10; // level 1 → 2
+
+  for (let i = 1; i < card.level; i++) {
+    required = Math.floor(required * 1.5);
+  }
+
+  return required;
+}
+
+/* ---------------- XP SYSTEM ---------------- */
+
+function rarityNerfMultiplier(card) {
+  if (card.stars === 1) return 1;
+
+  const thresholds = {
+    2: 5,
+    3: 10,
+    4: 20,
+    5: 40
+  };
+
+  const threshold = thresholds[card.stars];
+  return Math.min(1, playerLevel / threshold);
+}
+
+function baseCardXP(card, levelOffset = 0) {
+  return Math.ceil(
+    10 *
+    Math.pow(5, card.stars - 1) *
+    Math.pow(1.8, card.level - 1 + levelOffset)
+  );
+}
+
+function cardXPPerSecond(card) {
+  const baseXP = baseCardXP(card);
+  return Math.ceil(baseXP * rarityNerfMultiplier(card));
+}
+
+function totalXPPerSecond() {
+  let total = 0;
+  Object.values(ownedCards).forEach(card => {
+    total += cardXPPerSecond(card);
+  });
+  return total;
+}
+
+function effectiveXPPerSecond() {
+  const base = totalXPPerSecond();
+  const Y = miningInitialized ? getMiningXpMultiplier().Y : 1;
+
+  const withMining = base * Y;
+  return applyDragonXpBonus(withMining);
+}
+
+function startXPLoop() {
+  const tickRate = 50;
+  const ticksPerSecond = 1000 / tickRate;
+
+  setInterval(() => {
+    let xpGainPerSec = 0;
+
+    Object.values(ownedCards).forEach(card => {
+      xpGainPerSec += cardXPPerSecond(card);
+    });
+
+    // Mining multiplier (safe if mining isn't initialized yet)
+    const Y = miningInitialized ? getMiningXpMultiplier().Y : 1;
+    const withMining = xpGainPerSec * Y;
+
+    // Dragon exponent bonus
+    const finalPerSec = applyDragonXpBonus(withMining);
+
+    gainXP(finalPerSec / ticksPerSecond);
+  }, tickRate);
+}
+
+function gainXP(amount) {
+  const a = Number(amount) || 0;
+  if (a > 0) stats.totalXPGained += a;
+  playerXP += a;
+
+  while (playerXP >= nextPlayerLevelXP) {
+    playerXP -= nextPlayerLevelXP;
+    playerLevel++;
+    if (cardCooldownRemaining > 0) {
+    cardCooldownRemaining *= 0.95;
+  }
+    nextPlayerLevelXP = Math.floor(nextPlayerLevelXP * 1.2);
+  }
+
+  updatePlayerUI();
+}
+
+function formatTime(seconds) {
+  seconds = Math.ceil(seconds);
+
+  if (seconds < 60) {
+    return `${seconds} seconds`;
+  }
+
+  const days = Math.floor(seconds / 86400);
+  seconds %= 86400;
+  const hours = Math.floor(seconds / 3600);
+  seconds %= 3600;
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+
+  let parts = [];
+
+  if (days > 0) parts.push(days);
+  if (hours > 0 || parts.length) parts.push(String(hours).padStart(2, "0"));
+  if (minutes > 0 || parts.length) parts.push(String(minutes).padStart(2, "0"));
+  parts.push(String(secs).padStart(2, "0"));
+
+  return parts.join(":");
+}
+
+function updateDragonTabLabels() {
+  const p = document.getElementById("playerNameLevelLabel");
+  const d = document.getElementById("dragonLevelLabel");
+
+  if (p) {
+    const shownName = (playerName && playerName.trim()) ? playerName.trim() : "Player";
+    p.textContent = `${shownName} Level ${playerLevel}`;
+  }
+  if (d) {
+    d.textContent = `Dragon Level ${dragonLevel}`;
+  }
+}
+
+function updatePlayerUI() {
+  document.getElementById("playerLevelText").textContent =
+    `Level ${playerLevel}`;
+
+  const percent =
+    Math.min(100, (playerXP / nextPlayerLevelXP) * 100);
+
+  document.getElementById("playerXPFill").style.width =
+    `${percent}%`;
+
+    document.getElementById("playerXPText").textContent =
+  `${formatNumber(Math.floor(playerXP))} / ${formatNumber(nextPlayerLevelXP)} XP`;
+
+    const effXP = effectiveXPPerSecond();
+
+    document.getElementById("totalXPPerSec").textContent =
+  `${formatNumber(Math.floor(effXP))} XP/sec`;
+
+const xpPerSec = effXP;
+const xpRemaining = nextPlayerLevelXP - playerXP;
+
+let timeText = "Next level in --";
+
+if (xpPerSec > 0 && xpRemaining > 0) {
+  const secondsRemaining = xpRemaining / xpPerSec;
+  timeText = `Next level in ${formatTime(secondsRemaining)}`;
+}
+
+document.getElementById("timeToNextLevel").textContent = timeText;
+
+const keysEl = document.getElementById("keysText");
+if (keysEl) {
+  if (keysOwned > 0) {
+    keysEl.style.display = "block";
+    keysEl.innerHTML =
+  `You have <strong>${formatNumber(keysOwned)}</strong> ` +
+  `<span style="color:#bf7f00">Keys</span>`;
+  } else {
+    keysEl.style.display = "none";
+    keysEl.textContent = "";
+  }
+}
+
+if (spicyPeppers > 0) {
+  const pepperEl = document.getElementById("spicyPepperText");
+  pepperEl.style.display = "block";
+  pepperEl.innerHTML =
+  `You have <strong>${formatNumber(spicyPeppers)}</strong> ` +
+  `<span style="color:#e53935">Spicy Peppers</span>`;
+}
+updateDragonTabLabels();
+updateDragonRewardsUI();
+updateKeyDrawButtons();
+updateTabUnlocksUI();
+updateCardCooldownUI();
+}
+
+function updateKeyDrawButtons() {
+  const btn1 = document.getElementById("draw1KeyBtn");
+  const btnMax = document.getElementById("drawMaxKeysBtn");
+
+  if (btn1) btn1.disabled = keysOwned < 1;
+
+  if (btnMax) {
+    btnMax.disabled = keysOwned < 1;
+    btnMax.textContent = `Draw ${keysOwned} cards for ${keysOwned} keys`;
+  }
+}
+
+let cardGotMsgTimer = null;
+
+function showCardGotMessage(firstCardId, totalCardsDrawn, firstWasNew) {
+  const el = document.getElementById("cardGotMessage");
+  if (!el) return;
+
+  // Build the main text
+  let msg = "";
+  if (totalCardsDrawn <= 1) {
+    msg = `You got Card ${firstCardId}!`;
+  } else {
+    msg = `You got Card ${firstCardId}! (and ${totalCardsDrawn - 1} others)`;
+  }
+
+  // Add "new card" highlight if the FIRST card was new
+  const newBadge = firstWasNew
+    ? ` <span style="color:#efef00; font-weight:bold;">This is a new card!</span>`
+    : "";
+
+  el.innerHTML = msg + newBadge;
+  el.style.display = "block";
+
+  // Optional: auto-hide after a bit (remove this if you want it to persist)
+  if (cardGotMsgTimer) clearTimeout(cardGotMsgTimer);
+  cardGotMsgTimer = setTimeout(() => {
+    el.style.display = "none";
+  }, 5000);
+}
+
+/* ---------------- UI ---------------- */
+
+function renderGallery() {
+  const grid = document.getElementById("cardGrid");
+  grid.innerHTML = "";
+
+  cards.forEach(card => {
+    const owned = ownedCards[card.id];
+    const div = document.createElement("div");
+    div.className = `card rarity-${card.stars}`;
+
+    if (owned) {
+      div.classList.add("owned");
+      div.onclick = () => openModal(owned);
+
+      const img = document.createElement("img");
+      img.src = card.image;
+      div.appendChild(img);
+
+      // Cover ONLY for grid cards (not modal)
+      if (settings.showLevelInChat) {
+        div.style.position = "relative";
+
+        const cover = document.createElement("div");
+        cover.className = "card-name-cover";
+        cover.textContent = `Card ${card.id}`;
+        div.appendChild(cover);
+      }
+
+      if (canLevelUp(owned)) {
+        const indicator = document.createElement("div");
+        indicator.className = "level-up-indicator";
+        indicator.textContent = "▲";
+        div.appendChild(indicator);
+      }
+    }
+
+    grid.appendChild(div);
+  });
+}
+
+function openModal(card) {
+  selectedModalCard = card;
+  document.getElementById("modal").style.display = "flex";
+  updateModal();
+}
+
+function updateModal() {
+  if (!selectedModalCard) return;
+
+  const card = selectedModalCard;
+
+  document.getElementById("modalImage").src = card.image;
+  document.getElementById("modalTitle").textContent =
+    `Card ${card.id} (${card.stars}★)`;
+  document.getElementById("modalLevel").textContent =
+    `Level ${card.level}`;
+
+  document.getElementById("modalProgressText").textContent =
+    `${card.copies} / ${formatNumber(card.nextLevelCost)} duplicates`;
+
+  document.getElementById("modalProgressBar").style.width =
+    `${Math.min(100, (card.copies / card.nextLevelCost) * 100)}%`;
+
+  document.getElementById("levelUpButton").disabled =
+    !canLevelUp(card);
+
+  // XP per second display
+// XP per second (with nerf)
+const currentXP = cardXPPerSecond(card);
+let xpHTML = `XP per second: ${formatNumber(currentXP)}`;
+
+if (canLevelUp(card)) {
+  const nextBaseXP = baseCardXP(card, 1);
+  const nextXP = Math.ceil(nextBaseXP * rarityNerfMultiplier(card));
+
+  xpHTML =
+    `XP per second: ${formatNumber(currentXP)} ` +
+    `<span class="increase">→ ${formatNumber(nextXP)}</span>`;
+}
+
+const modalCover = document.querySelector("#modal #modalCardCover");
+if (modalCover) {
+  modalCover.textContent = `Card ${card.id}`;
+  modalCover.style.display = settings.showLevelInChat ? "flex" : "none";
+}
+
+document.getElementById("modalXPText").innerHTML = xpHTML;
+
+// Nerf explanation
+const multiplier = rarityNerfMultiplier(card);
+const nerfText = document.getElementById("modalNerfText");
+
+if (multiplier < 1) {
+  const thresholds = {
+    2: 5,
+    3: 10,
+    4: 20,
+    5: 40
+  };
+
+  const requiredLevel = thresholds[card.stars];
+  const nerfPercent = Math.round((1 - multiplier) * 100);
+
+  nerfText.innerHTML =
+    `This card is too powerful for its own good!<br>` +
+    `It will reach its full potential at player level ${requiredLevel}.<br>` +
+    `Current XP nerf: -${nerfPercent}%`;
+} else {
+  nerfText.textContent = "";
+}
+
+const pepperText = document.getElementById("modalPepperReward");
+if (pepperText) {
+  if (canLevelUp(card)) {
+    const peppers = spicyPeppersFromLevelUp(card);
+
+    pepperText.innerHTML =
+      `<div style="color:#eee;font-size:12px;">
+        Level-Up awards
+        <span style="color:#4caf50;font-weight:bold;">+${formatNumber(peppers)}</span>
+        <span style="color:#e53935;">Spicy Peppers</span>
+      </div>`;
+  } else {
+    pepperText.innerHTML = "";
+  }
+}
+renderBattleUpgrades();
+}
+
+function closeModal(e) {
+  if (e.target.id === "modal") {
+    document.getElementById("modal").style.display = "none";
+    selectedModalCard = null;
+  }
+}
+
+let selectedWeapon = null;
+let battleEnded = false;
+let interactionLocked = false;
+let mana = 100;
+function getMaxMana() {
+  return getBattleUpgradeEffect("manaCap");
+}
+const manaRegenPerSec = 5;
+const manaCostPerShot = 20;
+let dragonFrozenUntil = 0;
+let freezeTimeout = null;
+let poisonInterval = null;
+let dragonPoisonStacks = 0;
+let dragonPoisonTickTimer = 0;
+let lastManaUpdate = performance.now();
+let dropThroughPlatform = null;
+
+function isValidPlayerName(name) {
+  // letters, numbers, space, hyphen, underscore; max 16
+  if (name.length === 0 || name.length > 16) return false;
+  return /^[A-Za-z0-9 _-]+$/.test(name);
+}
+
+function setPlayerName(name) {
+  playerName = name;
+  updateDragonTabLabels();
+}
+
+function showNameError(message) {
+  const input = document.getElementById("playerNameInput");
+  const error = document.getElementById("playerNameError");
+
+  if (!input || !error) return;
+
+  input.classList.add("input-error");
+  error.textContent = message;
+  error.style.display = "block";
+}
+
+function clearNameError() {
+  const input = document.getElementById("playerNameInput");
+  const error = document.getElementById("playerNameError");
+
+  if (!input || !error) return;
+
+  input.classList.remove("input-error");
+  error.textContent = "";
+  error.style.display = "none";
+}
+
+const nameInput = document.getElementById("playerNameInput");
+if (nameInput) {
+  nameInput.value = makeDefaultName();
+  setPlayerName(nameInput.value);
+
+  nameInput.addEventListener("change", () => {
+    const val = nameInput.value.trim();
+
+    clearNameError();
+
+    if (val.length > 16) {
+      nameInput.value = "";
+      showNameError("Too long, max 16 characters");
+      return;
+    }
+
+    if (!/^[A-Za-z0-9 _-]+$/.test(val)) {
+      nameInput.value = "";
+      showNameError(
+        "Invalid character, please use A-Z, a-z, 0-9, hyphen, or underscore"
+      );
+      return;
+    }
+
+    if (val.length === 0) return;
+
+    setPlayerName(val);
+  });
+
+  nameInput.addEventListener("input", () => {
+    // Clear error as soon as user starts typing again
+    clearNameError();
+  });
+}
+
+function globalClickBlocker(e) {
+  if (interactionLocked && !e.target.closest(".back-button")) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+}
+
+const baseStats = {
+  player: {
+    hp: 100,
+    damage: 10,
+    freezeChance: 0,
+    poisonChance: 0
+  },
+  dragon: {
+    hp: 100,
+    damage: 10,
+    freezeChance: 0,
+    poisonChance: 0
+  }
+};
+
+const weapons = {
+  fire: {
+    damageMultiplier: 3,
+    freeze: 0,
+    poison: 0,
+    tooltip: "3× Damage"
+  },
+  ice: {
+    damageMultiplier: 1,
+    freeze: 25,
+    poison: 0,
+    tooltip: "25% chance to freeze enemy for 2s"
+  },
+  poison: {
+    damageMultiplier: 1,
+    freeze: 0,
+    poison: 15,
+    tooltip: "15% chance to poison enemy (10% damage/sec)"
+  },
+  normal: {
+    damageMultiplier: 1.5,
+    freeze: 10,
+    poison: 5,
+    tooltip: "1.5× damage, 10% freeze, 5% poison"
+  }
+};
+
+const battleUpgrades = [
+  // ───── FIRST COLUMN ─────
+  {
+    id: "shield",
+    name: "Stronger Shield",
+    desc: "Multiplier to HP",
+    max: Infinity,
+    effect: x => formatNumber(Math.floor(Math.pow(1.25, x) * 100) / 100),
+    cost: x => Math.floor(5 + 5 * x + Math.pow(1.1, x) - 1),
+    format: v => `${v}× HP`
+  },
+  {
+    id: "weapon",
+    name: "Stronger Weapon",
+    desc: "Multiplier to Damage",
+    max: Infinity,
+    effect: x => formatNumber(Math.floor(Math.pow(1.2, x) * 100) / 100),
+    cost: x => Math.floor(5 + 5 * x + Math.pow(1.1, x) - 1),
+    format: v => `${v}× damage`
+  },
+  {
+    id: "manaCap",
+    name: "Larger Tanks",
+    desc: "Mana storage",
+    max: Infinity,
+    effect: x => formatNumber(Math.floor(100 + 10 * x)),
+    cost: x => Math.floor(25 + 25 * x + Math.pow(1.15, x) - 1),
+    format: v => `${v} mana`
+  },
+  {
+    id: "manaRegen",
+    name: "Eco-Friendly Generators",
+    desc: "Mana regeneration",
+    max: 30,
+    effect: x => Math.floor((5 + 0.5 * x) * 10) / 10,
+    cost: x => Math.floor(50 * Math.pow(1.25, x)),
+    format: v => `${v} mana/sec`
+  },
+
+  // ───── SECOND COLUMN ─────
+  {
+    id: "freeze",
+    name: "Permafrost",
+    desc: "Freeze duration",
+    max: 20,
+    effect: x => Math.floor((2 + 0.1 * x) * 10) / 10,
+    cost: x => Math.floor(150 * Math.pow(1.35, x)),
+    format: v => `${v} seconds`,
+    affectsTooltip: true
+  },
+  {
+    id: "poison",
+    name: "Toxic Venom",
+    desc: "Poison damage percent",
+    max: 20,
+    effect: x => Math.floor(10 + x),
+    cost: x => Math.floor(150 * Math.pow(1.35, x)),
+    format: v => `${v}% of damage/sec`,
+    affectsTooltip: true
+  },
+  {
+    id: "block",
+    name: "Block Chance",
+    desc: "Chance to block projectiles",
+    max: 20,
+    effect: x => Math.floor(2 * x),
+    cost: x => Math.floor(500 * Math.pow(1.3, x)),
+    format: v => `${v}%`
+  },
+  {
+    id: "unscaling",
+    name: "Dragon Unscaling",
+    desc: "Lower dragon scaling exponent",
+    max: 10,
+    effect: x => Math.floor((2 - 0.02 * x) * 100) / 100,
+    cost: x => Math.floor(10000 * Math.pow(1.75, x)),
+    format: v => `^${v}`
+  }
+];
+
+let battleUpgradeLevels = {};
+battleUpgrades.forEach(u => battleUpgradeLevels[u.id] = 0);
+
+function selectWeapon(type) {
+  selectedWeapon = type;
+
+  document.querySelectorAll(".weapon").forEach(btn => {
+    btn.classList.remove("selected");
+  });
+
+  document.querySelector(`.weapon.${type}`).classList.add("selected");
+
+  applyWeaponStats();
+  applyBattleUpgradesToStats();
+  document.getElementById("weaponWarning").style.display = "none";
+}
+
+function getBattleUpgradeEffect(id) {
+  const upg = battleUpgrades.find(u => u.id === id);
+  return upg.effect(battleUpgradeLevels[id]);
+}
+
+document.addEventListener("keydown", e => {
+  if (e.key !== "ArrowDown") return;
+
+  // Allow normal scrolling unless the dragon battle is actually running
+  if (!battleRunning) return;
+
+  e.preventDefault();
+
+  // ---- DROP THROUGH ONE PLATFORM ----
+  if (!battlePlayer || !battlePlayer.grounded || dropThroughPlatform) return;
+
+  const platform = platforms.find(p =>
+    battlePlayer.x + battlePlayer.w > p.x &&
+    battlePlayer.x < p.x + p.w &&
+    Math.abs(battlePlayer.y + battlePlayer.h - p.y) <= 1
+  );
+
+  if (!platform) return;
+
+  dropThroughPlatform = platform;
+  battlePlayer.grounded = false;
+  battlePlayer.y += 1;
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+
+  // Only block scrolling while fighting the dragon
+  if (!battleRunning) return;
+
+  e.preventDefault();
+});
+
+function updateWeaponTooltips() {
+  document.querySelectorAll(".weaponBtn").forEach(btn => {
+    const type = btn.classList.contains("fire")   ? "fire" :
+                 btn.classList.contains("ice")    ? "ice" :
+                 btn.classList.contains("poison") ? "poison" :
+                 "normal";
+
+    const weapon = weapons[type];
+    let tooltip = weapon.tooltip;
+
+    if (weapon.freeze > 0) {
+      tooltip = tooltip.replace(
+        /\d+(\.\d+)?s/,
+        `${getBattleUpgradeEffect("freeze")} seconds`
+      );
+    }
+
+    if (weapon.poison > 0) {
+      tooltip = tooltip.replace(
+        /\(\d+% damage\/sec\)/,
+        `(${getBattleUpgradeEffect("poison")}% damage per second)`
+      );
+    }
+
+    btn.setAttribute("data-tooltip", tooltip);
+  });
+}
+
+function applyWeaponStats() {
+  const weapon = weapons[selectedWeapon];
+  const damage = Math.round(baseStats.player.damage * weapon.damageMultiplier);
+  document.getElementById("playerDamage").textContent = damage;
+
+  const freezeEl = document.getElementById("playerFreezeStat");
+  const poisonEl = document.getElementById("playerPoisonStat");
+
+  // Freeze
+  if (weapon.freeze > 0) {
+    document.getElementById("playerFreeze").textContent = weapon.freeze + "%";
+    freezeEl.classList.add("visible");
+  } else {
+    freezeEl.classList.remove("visible");
+  }
+
+  // Poison
+  if (weapon.poison > 0) {
+    document.getElementById("playerPoison").textContent = weapon.poison + "%";
+    poisonEl.classList.add("visible");
+
+    // Move Poison stat up if Poison weapon is selected
+    if (selectedWeapon === "poison") {
+      poisonEl.style.transform = "translateY(-16.5px)";
+    } else {
+      poisonEl.style.transform = "translateY(0)";
+    }
+
+  } else {
+    poisonEl.classList.remove("visible");
+    poisonEl.style.transform = "translateY(0)";
+    renderBattleUpgrades();
+  }
+}
+
+function applyBattleUpgradesToStats() {
+  // PLAYER STATS
+  const hp =
+    baseStats.player.hp *
+    getBattleUpgradeEffect("shield");
+
+  const weapon = selectedWeapon ? weapons[selectedWeapon] : null;
+  const dmgBase = baseStats.player.damage *
+    (weapon ? weapon.damageMultiplier : 1);
+
+  const damage =
+    dmgBase * getBattleUpgradeEffect("weapon");
+
+  document.getElementById("playerHP").textContent = formatNumber(Math.floor(hp));
+  document.getElementById("playerDamage").textContent = formatNumber(Math.floor(damage));
+
+  // MANA
+  window.maxMana = getBattleUpgradeEffect("manaCap");
+  window.manaRegenPerSec = getBattleUpgradeEffect("manaRegen");
+
+  // STATUS CHANCES (weapon + upgrades)
+  if (weapon) {
+    const freeze =
+      weapon.freeze > 0
+        ? weapon.freeze
+        : 0;
+
+    const poison =
+      weapon.poison > 0
+        ? weapon.poison
+        : 0;
+
+    document.getElementById("playerFreeze").textContent = freeze + "%";
+    document.getElementById("playerPoison").textContent = poison + "%";
+  }
+
+  updateManaUI(true);
+  updateWeaponTooltips();
+}
+
+let weaponWarningTimeout = null;
+
+function showWeaponWarning() {
+  const warning = document.getElementById("weaponWarning");
+
+  if (!warning) return;
+
+  warning.style.opacity = "1";
+
+  if (weaponWarningTimeout) {
+    clearTimeout(weaponWarningTimeout);
+  }
+
+  weaponWarningTimeout = setTimeout(() => {
+    warning.style.opacity = "0";
+  }, 3000);
+}
+
+function closeDragonModal(event) {
+  // Do NOTHING while a battle is active or finished
+  if (battleRunning || battleEnded) return;
+}
+
+/* ---------------- DRAGON PERF OPTIMIZATIONS ---------------- */
+
+// Cache battle HUD elements (DOM lookups are expensive per-frame)
+const battleUI = {
+  timer: () => document.getElementById("dragonFightTimer"),
+  manaFill: () => document.getElementById("manaBarFill"),
+  manaText: () => document.getElementById("manaBarText"),
+
+  pHP: () => document.getElementById("battlePlayerHP"),
+  dHP: () => document.getElementById("battleDragonHP"),
+  pDmg: () => document.getElementById("battlePlayerDamage"),
+  dDmg: () => document.getElementById("battleDragonDamage"),
+
+  pFreezeWrap: () => document.getElementById("battlePlayerFreeze"),
+  pPoisonWrap: () => document.getElementById("battlePlayerPoison"),
+  dFreezeWrap: () => document.getElementById("battleDragonFreeze"),
+  dPoisonWrap: () => document.getElementById("battleDragonPoison"),
+
+  poisonInfo: () => document.getElementById("poisonInfo"),
+};
+
+let lastHudUpdateMs = 0;
+let lastTimerUpdateMs = 0;
+
+// Only touch DOM this often while fighting (perf mode)
+const PERF_HUD_INTERVAL_MS = 150;   // ~6-7 times/sec
+const PERF_TIMER_INTERVAL_MS = 200; // timer text can be slower
+
+// Track last values so we only write when they change
+let _hudCache = {
+  pHP: null, dHP: null, pDmg: null, dDmg: null,
+  manaText: null, manaPct: null,
+  poisonText: null,
+  timerText: null,
+  timerRed: null,
+  pFreezeShown: null, pPoisonShown: null, dFreezeShown: null, dPoisonShown: null,
+  pFreezeVal: null, pPoisonVal: null, dFreezeVal: null, dPoisonVal: null,
+};
+
+function setTextIfChanged(el, val, cacheKey) {
+  if (!el) return;
+  if (_hudCache[cacheKey] === val) return;
+  _hudCache[cacheKey] = val;
+  el.textContent = val;
+}
+
+function setDisplayIfChanged(el, show, cacheKey) {
+  if (!el) return;
+  const v = !!show;
+  if (_hudCache[cacheKey] === v) return;
+  _hudCache[cacheKey] = v;
+  el.style.display = v ? "inline" : "none";
+}
+
+let canvas, ctx;
+
+function readPlayerStatsFromUI() {
+  return {
+    hp: Number(document.getElementById("playerHP").textContent),
+    damage: Number(document.getElementById("playerDamage").textContent),
+    freeze: document.getElementById("playerFreezeStat").classList.contains("visible")
+      ? Number(document.getElementById("playerFreeze").textContent.replace("%",""))
+      : 0,
+    poison: document.getElementById("playerPoisonStat").classList.contains("visible")
+      ? Number(document.getElementById("playerPoison").textContent.replace("%",""))
+      : 0
+  };
+}
+
+function readDragonStatsFromUI() {
+  return {
+    hp: Number(document.getElementById("dragonHP").textContent),
+    damage: Number(document.getElementById("dragonDamage").textContent),
+    freeze: document.getElementById("dragonFreezeStat")?.classList.contains("visible")
+      ? Number(document.getElementById("dragonFreeze")?.textContent.replace("%",""))
+      : 0,
+    poison: document.getElementById("dragonPoisonStat")?.classList.contains("visible")
+      ? Number(document.getElementById("dragonPoison")?.textContent.replace("%",""))
+      : 0
+  };
+}
+
+function openDragonModal() {
+  if (!selectedWeapon) {
+    showWeaponWarning();
+    return;
+  }
+    stats.lastWeaponUsed = selectedWeapon;
+  updateStatsUI();
+  saveGame(false);
+
+  interactionLocked = true;
+  document.body.classList.add("interaction-locked");
+  document.body.classList.add("modal-open");
+  window.addEventListener("click", globalClickBlocker, true);
+
+  document.getElementById("weaponWarning").style.display = "none";
+
+  const modal = document.getElementById("dragonModal");
+  modal.style.display = "flex";
+
+  canvas = document.getElementById("dragonCanvas");
+  ctx = canvas.getContext("2d");
+
+  canvas.addEventListener("mousemove", e => {
+    const rect = canvas.getBoundingClientRect();
+    mouseX = e.clientX - rect.left;
+    mouseY = e.clientY - rect.top;
+  });
+  applyBattleUpgradesToStats();
+  resetBattleState();
+  updateFightTimerUI(true);
+  updateBattleHudThrottled(true);
+  updateManaUI(true);
+  fightTimerEndMs = performance.now() + FIGHT_TIME_LIMIT_SEC * 1000;
+  fightTimerExpired = false;
+  updateFightTimerUI();
+  startDragonLoop();
+}
+
+function recalcDragonStats() {
+  const exponent = getBattleUpgradeEffect("unscaling");
+  const levelFactor = Math.pow(exponent, dragonLevel - 1);
+
+  dragonHP = Math.floor(1000 * levelFactor);
+  dragonDamage = Math.floor(100 * levelFactor);
+
+  // Update Dragon tab UI immediately
+  document.getElementById("dragonHP").textContent = formatNumber(dragonHP);
+  document.getElementById("dragonDamage").textContent = formatNumber(dragonDamage);
+}
+
+function getDragonXpExponentBonus() {
+  // exponent bonus factor = 1 + 0.01*(X^0.85)
+  if (dragonsDefeated <= 0) return 1;
+  return 1 + 0.01 * Math.pow(dragonsDefeated, 0.85);
+}
+
+function getDragonGemMultiplier() {
+  // 1.15^[dragons defeated]
+  return Math.pow(1.15, Math.max(0, dragonsDefeated || 0));
+}
+
+// Applies: New XP Gain = (Old XP Gain)^(1 + 0.01*(X^0.85))
+function applyDragonXpBonus(amount) {
+  const exp = getDragonXpExponentBonus();
+  if (exp === 1) return amount;
+  return Math.pow(Math.max(0, amount), exp);
+}
+
+function getDisplayedXpMultiplier() {
+  const base = Math.max(1, totalXPPerSecond());
+  const Y = miningInitialized ? getMiningXpMultiplier().Y : 1;
+
+  const oldVal = Math.max(1, base * Y); // include mining multiplier
+  const exp = getDragonXpExponentBonus();
+
+  return Math.pow(oldVal, exp - 1);
+}
+
+function getCardsPerClickExpected() {
+  // cards per click = floor(1.1^X)
+  return Math.floor(Math.pow(1.1, Math.max(0, dragonsDefeated)));
+}
+
+function updateDragonRewardsUI() {
+  const el = document.getElementById("dragonRewards");
+  if (!el) return;
+
+  const xpMult = getDisplayedXpMultiplier();
+  const cardsExpected = getCardsPerClickExpected();
+
+  const gemMult = getDragonGemMultiplier();
+  const gemMultDisplay = Math.max(1, Math.floor(gemMult));
+
+  el.innerHTML = `
+    <h3>You have defeated <b>${dragonsDefeated}</b> dragons, which:</h3><br>
+    Multiplies your XP gain by <b>x${xpMult.toFixed(2)}</b><br>
+    Allows you to claim <b>${cardsExpected}</b> cards at once<br>
+    Multiplies gem gain by <b>x${formatNumber(gemMultDisplay)}</b>
+  `;
+  updateCardCooldownUI();
+}
+
+function debugDragonXpMath(oldGain, defeated) {
+  const exp = 1 + 0.01 * Math.pow(defeated, 0.85);
+  const newGain = Math.pow(oldGain, exp);
+  const mult = newGain / oldGain;
+
+  console.log({
+    defeated,
+    oldGain,
+    exp,
+    newGain,
+    mult
+  });
+}
+
+/* ---------------- DRAGON BATTLE STATE ---------------- */
+
+let battleRunning = false;
+let fightTimerEndMs = 0;
+let fightTimerExpired = false;
+const FIGHT_TIME_LIMIT_SEC = 60;
+
+const battlePlayer = {
+  x: 80,
+  y: 200,
+  w: 20,
+  h: 20,
+  vx: 0,
+  vy: 0,
+  speed: 3,
+  jumpPower: 10,
+  grounded: false,
+  hp: baseStats.player.hp,
+  damage: baseStats.player.damage
+};
+
+const battleDragon = {
+  x: 460,
+  y: 200,
+  w: 30,
+  h: 30,
+  vx: 0,
+  vy: 0,
+  grounded: false,
+  hp: baseStats.dragon.hp,
+  damage: baseStats.dragon.damage,
+  lastShot: 0,
+  nextShotDelay: 1000 + Math.random() * 2000
+};
+
+const DRAGON_SCALE = 1.75;
+
+function dragonBounds() {
+  return {
+    x: battleDragon.x - battleDragon.w * (DRAGON_SCALE - 1) / 2,
+    y: battleDragon.y - battleDragon.h * (DRAGON_SCALE - 1) / 2,
+    w: battleDragon.w * DRAGON_SCALE,
+    h: battleDragon.h * DRAGON_SCALE
+  };
+}
+
+let dragonWallTimer = 0;
+
+function updateFightTimerUI(force = false) {
+  const el = battleUI.timer();
+  if (!el) return;
+
+  if (!battleRunning || battleEnded || !fightTimerEndMs) {
+    if (_hudCache.timerText !== "") {
+      _hudCache.timerText = "";
+      el.textContent = "";
+      el.classList.remove("timer-red");
+    }
+    return;
+  }
+
+  const now = performance.now();
+
+  // In perf mode, throttle timer DOM updates
+  if (dragonPerfMode() && !force) {
+    if (now - lastTimerUpdateMs < PERF_TIMER_INTERVAL_MS) return;
+    lastTimerUpdateMs = now;
+  }
+
+  const msLeft = Math.max(0, fightTimerEndMs - now);
+  const secLeft = Math.ceil(msLeft / 1000);
+
+  const text = `Time left: ${secLeft}s`;
+  if (_hudCache.timerText !== text) {
+    _hudCache.timerText = text;
+    el.textContent = text;
+  }
+
+  const shouldRed = secLeft <= 10;
+  if (_hudCache.timerRed !== shouldRed) {
+    _hudCache.timerRed = shouldRed;
+    el.classList.toggle("timer-red", shouldRed);
+  }
+}
+
+function generatePlatforms() {
+  platforms.length = 0;
+
+  const maxPlatforms = 10;
+  const minGap = 10;
+
+  let attempts = 0;
+
+  while (platforms.length < maxPlatforms && attempts < 500) {
+    attempts++;
+
+    const newPlatform = {
+      x: Math.random() * 520 + 20,
+      y: Math.random() * 180 + 80,
+      w: 60,
+      h: 10
+    };
+
+    let overlaps = platforms.some(p =>
+      newPlatform.x < p.x + p.w + minGap &&
+      newPlatform.x + newPlatform.w + minGap > p.x &&
+      newPlatform.y < p.y + p.h + minGap &&
+      newPlatform.y + newPlatform.h + minGap > p.y
+    );
+
+    if (!overlaps) {
+      platforms.push(newPlatform);
+    }
+  }
+}
+
+const gravityBattle = 0.35;
+const platforms = [];
+const playerProjectiles = [];
+const dragonProjectiles = [];
+
+function updateManaUI(force = false) {
+  const max = getMaxMana();
+  const pct = Math.max(0, Math.min(100, (mana / max) * 100));
+  const text = `Mana: ${formatNumber(Math.floor(mana))} / ${formatNumber(max)}`;
+
+  // In perf mode, throttle mana DOM updates hard
+  if (dragonPerfMode() && !force) {
+    const now = performance.now();
+    if (now - lastHudUpdateMs < PERF_HUD_INTERVAL_MS) return;
+  }
+
+  const fill = battleUI.manaFill();
+  const label = battleUI.manaText();
+
+  if (fill && _hudCache.manaPct !== pct) {
+    _hudCache.manaPct = pct;
+    fill.style.width = pct + "%";
+  }
+
+  setTextIfChanged(label, text, "manaText");
+}
+
+function shootDragonProjectile() {
+  const dx = battlePlayer.x - battleDragon.x;
+  const dy = battlePlayer.y - battleDragon.y;
+  const len = Math.hypot(dx, dy) || 1;
+
+  dragonProjectiles.push({
+    x: battleDragon.x,
+    y: battleDragon.y,
+    vx: (dx / len) * 4,
+    vy: (dy / len) * 4,
+    r: 5
+  });
+}
+
+function shootPlayerProjectile() {
+  if (mana < manaCostPerShot) return;
+  mana -= manaCostPerShot;
+  updateManaUI(true);
+
+  const dx = mouseX - battlePlayer.x;
+  const dy = mouseY - battlePlayer.y;
+  const len = Math.hypot(dx, dy) || 1;
+
+  playerProjectiles.push({
+    x: battlePlayer.x + battlePlayer.w / 2,
+    y: battlePlayer.y + battlePlayer.h / 2,
+    vx: (dx / len) * 5,
+    vy: (dy / len) * 5,
+    r: 4,
+    color: getWeaponColor()
+  });
+}
+
+function circleRectHit(c, r) {
+  const cx = Math.max(r.x, Math.min(c.x, r.x + r.w));
+  const cy = Math.max(r.y, Math.min(c.y, r.y + r.h));
+  return Math.hypot(c.x - cx, c.y - cy) < c.r;
+}
+
+function getWeaponColor() {
+  if (!selectedWeapon) return "white";
+  if (selectedWeapon === "fire") return "#e54935";
+  if (selectedWeapon === "ice") return "#6fbcdf";
+  if (selectedWeapon === "poison") return "#63d047";
+  return "#8e24aa";
+}
+
+const keys = {};
+
+window.addEventListener("keydown", e => {
+  keys[e.key] = true;
+
+  if (!battleRunning) return;
+
+  if (e.key === "f" && canFire) {
+    shootPlayerProjectile();
+    canFire = false; // lock until keyup
+  }
+});
+
+window.addEventListener("keyup", e => {
+  keys[e.key] = false;
+
+  if (e.key === "f") {
+    canFire = true; // unlock firing
+  }
+});
+
+window.addEventListener("keydown", e => {
+  if (battleRunning && e.code === "Space") {
+    e.preventDefault();
+    return;
+  }
+});
+
+function startDragonLoop() {
+  battleRunning = true;
+  generatePlatforms();
+  requestAnimationFrame(updateBattle);
+  battleDragon.lastShot = performance.now();
+  battleDragon.nextShotDelay = 2000;
+}
+
+function stopDragonLoop() {
+  battleRunning = false;
+}
+
+function updateBattle() {
+updateFightTimerUI();
+
+if (!fightTimerExpired && performance.now() >= fightTimerEndMs) {
+  fightTimerExpired = true;
+  endBattle(false); // same Game Over as dying
+  return; // stop this frame
+}
+
+  if (!battleRunning || battleEnded) return;
+
+  const now = performance.now();
+  const deltaSec = (now - lastBattleTime) / 1000;
+  lastBattleTime = now;
+
+  updateMana(deltaSec);
+
+  updateBattlePhysics();
+  updateBattleAI();
+  renderBattle();
+  updateBattleHudThrottled(false);
+
+  requestAnimationFrame(updateBattle);
+}
+
+let mouseX = 0;
+let mouseY = 0;
+let canFire = true;
+
+function rectsOverlap(a, b) {
+  return (
+    a.x < b.x + b.w &&
+    a.x + a.w > b.x &&
+    a.y < b.y + b.h &&
+    a.y + a.h > b.y
+  );
+}
+
+let lastBattleTime = performance.now();
+
+function updateMana(deltaSec) {
+  mana = Math.min(
+    getMaxMana(),
+    mana + getBattleUpgradeEffect("manaRegen") * deltaSec
+  );
+  updateManaUI();
+}
+
+function updateBattlePhysics() {
+  if (playerHitCooldown > 0) {
+  playerHitCooldown--;
+}
+// Horizontal movement
+if (playerHitCooldown <= 0) {
+  battlePlayer.vx = 0;
+}
+
+if (keys["ArrowLeft"]) battlePlayer.vx = -2;
+if (keys["ArrowRight"]) battlePlayer.vx = 2;
+
+// Jump (only once per press while grounded)
+if (keys["ArrowUp"] && battlePlayer.grounded) {
+  battlePlayer.vy = -7;
+  battlePlayer.grounded = false;
+}
+  battlePlayer.grounded = false;
+  battlePlayer.vy += gravityBattle;
+  battlePlayer.x += battlePlayer.vx;
+  battlePlayer.y += battlePlayer.vy;
+
+  // Ground
+  if (battlePlayer.y + battlePlayer.h >= 300) {
+    battlePlayer.y = 300 - battlePlayer.h;
+    battlePlayer.vy = 0;
+    battlePlayer.grounded = true;
+  }
+
+  // Platforms
+  platforms.forEach(p => {
+    if (
+  p !== dropThroughPlatform &&
+  battlePlayer.vy > 0 &&
+  battlePlayer.x + battlePlayer.w > p.x &&
+  battlePlayer.x < p.x + p.w &&
+  battlePlayer.y + battlePlayer.h >= p.y &&
+  battlePlayer.y + battlePlayer.h <= p.y + 10
+) {
+  battlePlayer.y = p.y - battlePlayer.h;
+  battlePlayer.vy = 0;
+  battlePlayer.grounded = true;
+}
+  });
+
+  if (
+  dropThroughPlatform &&
+  battlePlayer.y > dropThroughPlatform.y + 5
+) {
+  dropThroughPlatform = null;
+}
+
+  playerProjectiles.forEach((p, i) => {
+  p.x += p.vx;
+  p.y += p.vy;
+
+  if (circleRectHit(p, dragonBounds())) {
+  const dealt = Math.min(battlePlayer.damage, battleDragon.hp);
+  stats.totalDamageDealt += dealt;
+
+  // Damage
+  battleDragon.hp = Math.max(0, battleDragon.hp - battlePlayer.damage);
+
+  // ---- FREEZE ----
+  if (
+  battlePlayer.freezeChance > 0 &&
+  performance.now() > dragonFrozenUntil &&
+  Math.random() < battlePlayer.freezeChance / 100
+) {
+  const freezeDuration =
+  getBattleUpgradeEffect("freeze") * 1000;
+
+  dragonFrozenUntil =
+  performance.now() + freezeDuration;
+}
+
+  // ---- POISON ----
+// ---- POISON ----
+if (
+  battlePlayer.poisonChance > 0 &&
+  Math.random() < battlePlayer.poisonChance / 100
+) {
+  dragonPoisonStacks++;
+  updatePoisonInfo();
+
+  if (!poisonInterval) {
+    poisonInterval = setInterval(() => {
+      if (battleEnded || dragonPoisonStacks === 0) return;
+
+      const poisonPercent =
+        getBattleUpgradeEffect("poison") / 100;
+
+      const poisonDamage = Math.round(
+        dragonPoisonStacks *
+        (battlePlayer.damage * poisonPercent)
+      );
+
+      const dealt = Math.min(poisonDamage, battleDragon.hp);
+      stats.totalDamageDealt += dealt;
+
+      battleDragon.hp = Math.max(
+        0,
+        battleDragon.hp - poisonDamage
+      );
+
+      updatePoisonInfo();
+    }, 1000);
+  }
+}
+
+  playerProjectiles.splice(i, 1);
+}
+});
+
+dragonProjectiles.forEach((p, i) => {
+  p.x += p.vx;
+  p.y += p.vy;
+
+  if (circleRectHit(p, battlePlayer)) {
+    const blockChance =
+  getBattleUpgradeEffect("block") / 100;
+
+if (Math.random() < blockChance) {
+  // BLOCKED
+  flashPlayer({ r: 80, g: 160, b: 255 }); // blue
+  dragonProjectiles.splice(i, 1);
+  return;
+}
+
+// HIT
+battlePlayer.hp = Math.max(
+  0,
+  battlePlayer.hp - battleDragon.damage
+);
+
+flashPlayer(); // red
+dragonProjectiles.splice(i, 1);
+
+  }
+});
+
+battlePlayer.x = Math.max(0, Math.min(canvas.width - battlePlayer.w, battlePlayer.x));
+battlePlayer.y = Math.min(canvas.height - battlePlayer.h, battlePlayer.y);
+
+if (battleDragon.x <= 0) {
+  battleDragon.x = 0;
+  dragonWallTimer = 60;
+}
+
+if (battleDragon.x + battleDragon.w >= canvas.width) {
+  battleDragon.x = canvas.width - battleDragon.w;
+  dragonWallTimer = 60;
+}
+
+if (rectsOverlap(battlePlayer, dragonBounds()) && playerHitCooldown <= 0) {
+  battlePlayer.hp -= battleDragon.damage * 2;
+  flashPlayer();
+
+  battlePlayer.vx = battlePlayer.x < battleDragon.x ? -6 : 6;
+  battlePlayer.vy = -4;
+
+  playerHitCooldown = 20;
+}
+renderBattleUpgrades();
+}
+
+function isUpgradeMaxed(upgrade) {
+  return upgrade.max !== null &&
+         battleUpgradeLevels[upgrade.id] >= upgrade.max;
+}
+
+let playerFlashStart = 0;
+const PLAYER_FLASH_DURATION = 0.33;
+let playerHitCooldown = 0;
+let playerFlashColor = { r: 255, g: 68, b: 68 };
+
+function flashPlayer(color = { r: 255, g: 68, b: 68 }) {
+  playerFlashColor = color;
+  playerFlashStart = performance.now();
+}
+
+function getPlayerFlashColor(baseColor) {
+  if (!playerFlashStart) return baseColor;
+
+  const elapsed =
+    (performance.now() - playerFlashStart) / 1000;
+
+  if (elapsed >= PLAYER_FLASH_DURATION) {
+    playerFlashStart = 0;
+    return baseColor;
+  }
+
+  const t = elapsed / PLAYER_FLASH_DURATION;
+
+  return lerpColor(
+  playerFlashColor,
+  baseColor,
+  t
+);
+}
+
+function updateBattleAI() {
+  const now = performance.now();
+
+  // ---- FROZEN ----
+  if (now < dragonFrozenUntil) {
+    battleDragon.vx = 0;
+    battleDragon.vy = 0;
+    return;
+  }
+
+  // ---- WALL COOLDOWN ----
+  if (dragonWallTimer > 0) {
+    dragonWallTimer--;
+  }
+
+  // ---- RANDOM MOVEMENT ----
+  if (Math.random() < 0.01) {
+    battleDragon.vx = (Math.random() - 0.5) * 4;
+
+    if (Math.random() < 0.3 && battleDragon.grounded) {
+      battleDragon.vy = -8;
+      battleDragon.grounded = false;
+    }
+  }
+
+  // ---- PHYSICS ----
+  battleDragon.vy += gravityBattle;
+  battleDragon.x += battleDragon.vx;
+  battleDragon.y += battleDragon.vy;
+
+  const d = dragonBounds();
+
+  // ---- GROUND COLLISION ----
+  if (d.y + d.h >= 300) {
+    battleDragon.y =
+      300 - d.h + battleDragon.h * (DRAGON_SCALE - 1) / 2;
+    battleDragon.vy = 0;
+    battleDragon.grounded = true;
+  }
+
+  // ---- PLATFORM COLLISION ----
+  for (const p of platforms) {
+    const d = dragonBounds();
+
+    if (
+      battleDragon.vy > 0 &&
+      d.x + d.w > p.x &&
+      d.x < p.x + p.w &&
+      d.y + d.h >= p.y &&
+      d.y + d.h <= p.y + 10
+    ) {
+      battleDragon.y =
+        p.y - d.h + battleDragon.h * (DRAGON_SCALE - 1) / 2;
+      battleDragon.vy = 0;
+      battleDragon.grounded = true;
+      break;
+    }
+  }
+
+  // ---- WALL COLLISION (FIXED) ----
+  if (dragonWallTimer === 0) {
+    const hitLeft = d.x <= 0;
+    const hitRight = d.x + d.w >= canvas.width;
+
+    if (hitLeft || hitRight) {
+      battleDragon.vx *= -1;
+
+      // Nudge away from wall to prevent re-trigger
+      battleDragon.x += hitLeft ? 2 : -2;
+
+      dragonWallTimer = 15; // ~250ms cooldown at 60fps
+    }
+  }
+
+  // ---- SHOOTING ----
+  if (now - battleDragon.lastShot > battleDragon.nextShotDelay) {
+    shootDragonProjectile();
+    battleDragon.lastShot = now;
+    battleDragon.nextShotDelay = 1000 + Math.random() * 2000;
+  }
+}
+
+function drawCharacter(x, y, w, h, color, options = {}) {
+  const radius = Math.min(w, h) * 0.25; // roundness
+  const cx = x + w / 2;
+  const cy = y + h / 2;
+
+  // Rounded square body
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  ctx.lineTo(x + w, y + h - radius);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+  ctx.lineTo(x + radius, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.fill();
+
+  // Eye
+  const eyeColor = options.eyeColor || "#000";
+  const eyeSide = options.eyeSide || "right";
+
+  const eyeOffsetX =
+    eyeSide === "left" ? -w * 0.18 : w * 0.18;
+  const eyeOffsetY = -h * 0.15;
+  const eyeR = Math.max(1, w * 0.06);
+
+  ctx.fillStyle = eyeColor;
+  ctx.beginPath();
+  ctx.arc(cx + eyeOffsetX, cy + eyeOffsetY, eyeR, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+function resetBattleState() {
+  fightTimerEndMs = 0;
+  fightTimerExpired = false;
+  updateFightTimerUI();
+
+  if (freezeTimeout) {
+  clearTimeout(freezeTimeout);
+  freezeTimeout = null;
+}
+
+if (poisonInterval) {
+  clearInterval(poisonInterval);
+  poisonInterval = null;
+}
+
+  battleEnded = false;
+  battleRunning = false;
+
+  dragonFrozen = false;
+dragonFreezeTimer = getBattleUpgradeEffect("freeze");
+dragonPoisonStacks = 0;
+dragonPoisonTickTimer = 0;
+updatePoisonInfo();
+
+const poisonInfo = document.getElementById("poisonInfo");
+if (poisonInfo) poisonInfo.style.display = "none";
+
+
+  battlePlayer.x = 80;
+  battlePlayer.y = 200;
+  battlePlayer.vx = 0;
+  battlePlayer.vy = 0;
+  battlePlayer.grounded = false;
+
+  battleDragon.x = 460;
+  battleDragon.y = 200;
+  battleDragon.vx = 0;
+  battleDragon.vy = 0;
+  battleDragon.grounded = false;
+  battleDragon.lastShot = 0;
+
+  const playerStats = readPlayerStatsFromUI();
+const dragonStats = readDragonStatsFromUI();
+
+battlePlayer.hp = playerStats.hp;
+battlePlayer.damage = playerStats.damage;
+battlePlayer.freezeChance = playerStats.freeze;
+battlePlayer.poisonChance = playerStats.poison;
+
+battleDragon.hp = dragonStats.hp;
+battleDragon.damage = dragonStats.damage;
+battleDragon.freezeChance = dragonStats.freeze;
+battleDragon.poisonChance = dragonStats.poison;
+
+  playerProjectiles.length = 0;
+  dragonProjectiles.length = 0;
+  platforms.length = 0;
+
+  playerFlashTimer = 0;
+  playerHitCooldown = 0;
+  mana = getMaxMana();
+  const oldOverlay = document.getElementById("battleOverlay");
+  if (oldOverlay) oldOverlay.remove();
+  updateManaUI();
+}
+
+function renderBattleUpgrades() {
+  const container = document.getElementById("battleUpgrades");
+  container.innerHTML = "";
+
+  battleUpgrades.forEach(upg => {
+    const lvl = battleUpgradeLevels[upg.id];
+    const cost = upg.cost(lvl);
+    const curr = upg.effect(lvl);
+    const next = upg.effect(lvl + 1);
+
+    const affordable =
+      spicyPeppers >= cost && !isUpgradeMaxed(upg);
+
+    const div = document.createElement("div");
+    div.className = "upgrade";
+
+    div.innerHTML = `
+      <b>${upg.name}</b> — ${upg.desc}<br>
+
+      <div>
+Effect: ${upg.format(curr)}
+${isUpgradeMaxed(upg)
+  ? '<span style="color:#FF4444;"> (maxed)</span>'
+  : ''}
+        <span class="preview"> → ${upg.format(next)}</span>
+      </div>
+
+      <button ${!affordable ? "disabled" : ""}>
+        Cost: ${formatNumber(cost)} Spicy Peppers
+      </button>
+    `;
+
+    const btn = div.querySelector("button");
+    const preview = div.querySelector(".preview");
+
+    // Default: preview hidden
+    preview.style.display = "none";
+
+    if (affordable) {
+      btn.onmouseenter = () => preview.style.display = "inline";
+      btn.onmouseleave = () => preview.style.display = "none";
+    }
+
+btn.onclick = () => {
+  if (!affordable) return;
+
+  spicyPeppers -= cost;
+  battleUpgradeLevels[upg.id]++;
+  stats.totalBattleUpgradesPurchased += 1;
+
+  applyBattleUpgradesToStats();
+  if (upg.id === "unscaling") recalcDragonStats();
+
+  renderBattleUpgrades();
+  saveGame(false);
+};
+
+    container.appendChild(div);
+  });
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function lerpColor(from, to, t) {
+  return {
+    r: Math.round(lerp(from.r, to.r, t)),
+    g: Math.round(lerp(from.g, to.g, t)),
+    b: Math.round(lerp(from.b, to.b, t))
+  };
+}
+
+function dragonPerfMode() {
+  return !!settings.optimizeDragonFighting;
+}
+
+function renderBattle() {
+  ctx.clearRect(0, 0, 600, 300);
+  if (!dragonPerfMode()) {
+
+  // Platforms
+  ctx.fillStyle = "#00ef2f";
+ctx.shadowColor = "#00ef2f";
+ctx.shadowBlur = 6;
+} else {
+  ctx.shadowBlur = 0;
+}
+platforms.forEach(p => ctx.fillRect(p.x, p.y, p.w, p.h));
+const maxPlatformsToDraw = dragonPerfMode() ? 5 : platforms.length;
+for (let i = 0; i < maxPlatformsToDraw; i++) {
+  const p = platforms[i];
+  ctx.fillRect(p.x, p.y, p.w, p.h);
+}
+
+// Reset shadows so they don't affect other drawings
+ctx.shadowBlur = 0;
+
+  // Dragon
+  ctx.fillStyle = "#000000";
+
+  // Player projectiles
+  playerProjectiles.forEach(p => {
+  if (!dragonPerfMode()) {
+    ctx.shadowColor = p.color;
+    ctx.shadowBlur = 6;
+  } else {
+    ctx.shadowBlur = 0;
+  }
+  ctx.fillStyle = p.color;
+  ctx.fillRect(p.x, p.y, 6, 3);
+});
+ctx.shadowBlur = 0;
+
+  // Dragon projectiles
+  dragonProjectiles.forEach(p => {
+  ctx.shadowColor = "#ffcf00";
+  ctx.shadowBlur = 6;
+
+  ctx.fillStyle = "#ffcf00";
+  ctx.fillRect(p.x, p.y, 6, 3);
+});
+
+ctx.shadowBlur = 0;
+
+  // Player effects
+
+const pFreeze = document.getElementById("battlePlayerFreeze");
+const pPoison = document.getElementById("battlePlayerPoison");
+
+pFreeze.style.display = battlePlayer.freezeChance > 0 ? "inline" : "none";
+pPoison.style.display = battlePlayer.poisonChance > 0 ? "inline" : "none";
+
+if (battlePlayer.freezeChance > 0)
+  pFreeze.querySelector("span").textContent = battlePlayer.freezeChance;
+
+if (battlePlayer.poisonChance > 0)
+  pPoison.querySelector("span").textContent = battlePlayer.poisonChance;
+
+
+// Dragon effects
+const dFreeze = document.getElementById("battleDragonFreeze");
+const dPoison = document.getElementById("battleDragonPoison");
+
+dFreeze.style.display = battleDragon.freezeChance > 0 ? "inline" : "none";
+dPoison.style.display = battleDragon.poisonChance > 0 ? "inline" : "none";
+
+if (battleDragon.freezeChance > 0)
+  dFreeze.querySelector("span").textContent = battleDragon.freezeChance;
+
+if (battleDragon.poisonChance > 0)
+  dPoison.querySelector("span").textContent = battleDragon.poisonChance;
+
+  const baseColor = playerColors[playerColorIndex];
+const flashColor = getPlayerFlashColor(baseColor);
+
+drawCharacter(
+  battlePlayer.x,
+  battlePlayer.y,
+  battlePlayer.w,
+  battlePlayer.h,
+  `rgb(${flashColor.r}, ${flashColor.g}, ${flashColor.b})`,
+  { eyeSide: battlePlayer.vx < 0 ? "left" : "right" }
+);
+
+// Dragon
+const dragonDrawX = battleDragon.x - battleDragon.w * 0.375;
+const dragonDrawY = battleDragon.y - battleDragon.h * 0.375;
+
+drawCharacter(
+  dragonDrawX,
+  dragonDrawY,
+  battleDragon.w * 1.75,
+  battleDragon.h * 1.75,
+  performance.now() < dragonFrozenUntil ? "#005f7f" : "#000",
+  {
+    eyeColor: "#00ff66",
+    eyeSide: battleDragon.vx < 0 ? "left" : "right"
+  }
+);
+
+const poisonInfo = document.getElementById("poisonInfo");
+
+if (dragonPoisonStacks > 0) {
+  const poisonDps = getPoisonDps();
+  dps = getPoisonDps();
+  poisonInfo.textContent =
+    `Poisons: ${dragonPoisonStacks} (−${formatNumber(dps)}/sec to Dragon HP)`;
+
+  poisonInfo.style.display = "block";
+} else {
+  poisonInfo.style.display = "none";
+}
+
+if (!battleEnded) {
+  if (battleDragon.hp <= 0) endBattle(true);
+  if (battlePlayer.hp <= 0) endBattle(false);
+}
+}
+
+function rgbToCss(c) {
+  return `rgb(${c.r}, ${c.g}, ${c.b})`;
+}
+
+function getPoisonDps() {
+  const poisonPercent = getBattleUpgradeEffect("poison") / 100;
+  return Math.round(
+    dragonPoisonStacks *
+    battlePlayer.damage *
+    poisonPercent
+  );
+}
+
+function updatePoisonInfo() {
+  const poisonInfo = document.getElementById("poisonInfo");
+  if (!poisonInfo) return;
+
+  if (dragonPoisonStacks > 0) {
+    const poisonPercent = getBattleUpgradeEffect("poison") / 100;
+    const dps = Math.round(
+      dragonPoisonStacks * (battlePlayer.damage * poisonPercent)
+    );
+
+    poisonInfo.style.display = "block";
+    poisonInfo.textContent =
+      `Poisons: ${dragonPoisonStacks} (−${formatNumber(dps)}/sec to Dragon HP)`;
+  } else {
+    poisonInfo.style.display = "none";
+  }
+}
+
+function endBattle(playerWon) {
+  if (freezeTimeout) {
+  clearTimeout(freezeTimeout);
+  freezeTimeout = null;
+}
+
+if (poisonInterval) {
+  clearInterval(poisonInterval);
+  poisonInterval = null;
+}
+
+if (playerWon) {
+  const exponent = getBattleUpgradeEffect("unscaling");
+
+dragonsDefeated++;
+dragonLevel++;
+
+recalcDragonStats();
+updateDragonTabLabels();
+updateDragonRewardsUI();
+}
+
+  battleRunning = false;
+  interactionLocked = true;
+  battleEnded = true;
+  battleRunning = false;
+
+  const overlay = document.createElement("div");
+  overlay.id = "battleOverlay";
+  overlay.style.position = "absolute";
+  overlay.style.inset = "0";
+  overlay.style.background = "rgba(0,0,0,0.5)";
+  overlay.style.display = "flex";
+  overlay.style.flexDirection = "column";
+  overlay.style.alignItems = "center";
+  overlay.style.justifyContent = "center";
+  overlay.style.color = "#fff";
+  overlay.style.fontSize = "32px";
+  overlay.style.zIndex = "10";
+
+  overlay.innerHTML = `
+  <div style="margin-bottom:20px;">
+    ${playerWon ? "You Win!" : "Game Over"}
+  </div>
+<div class="back-button" style="
+  margin-top: 20px;
+  padding: 10px 18px;
+  border: 1px solid white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  background: rgba(47,47,95,1);
+">
+  Back to Dragon Tab
+</div>
+`;
+
+overlay.onclick = e => {
+  if (!e.target.textContent.includes("Back")) return;
+
+  document.getElementById("dragonModal").style.display = "none";
+  document.body.classList.remove("modal-open");
+};
+
+overlay.onclick = e => {
+  const backBtn = e.target.closest(".back-button");
+  if (!backBtn) return;
+
+  document.getElementById("dragonModal").style.display = "none";
+
+  document.body.classList.remove("interaction-locked");
+  document.body.classList.remove("modal-open");
+
+  interactionLocked = false;
+  window.removeEventListener("click", globalClickBlocker, true);
+
+  resetBattleState();
+};
+
+  document.getElementById("dragonModal").appendChild(overlay);
+
+  playerProjectiles.length = 0;
+dragonProjectiles.length = 0;
+
+updateStatsUI();
+saveGame(false);
+}
+
+function updateBattleHudThrottled(force = false) {
+  const now = performance.now();
+
+  // In perf mode: update HUD only occasionally
+  if (dragonPerfMode() && !force) {
+    if (now - lastHudUpdateMs < PERF_HUD_INTERVAL_MS) return;
+  }
+
+  lastHudUpdateMs = now;
+
+  // HP/Damage
+  setTextIfChanged(battleUI.pHP(), formatNumber(battlePlayer.hp), "pHP");
+setTextIfChanged(battleUI.dHP(), formatNumber(battleDragon.hp), "dHP");
+setTextIfChanged(battleUI.pDmg(), formatNumber(battlePlayer.damage), "pDmg");
+setTextIfChanged(battleUI.dDmg(), formatNumber(battleDragon.damage), "dDmg");
+
+  // Status lines (only update occasionally)
+  const pFreeze = battleUI.pFreezeWrap();
+  const pPoison = battleUI.pPoisonWrap();
+  const dFreeze = battleUI.dFreezeWrap();
+  const dPoison = battleUI.dPoisonWrap();
+
+  const pFreezeShown = battlePlayer.freezeChance > 0;
+  const pPoisonShown = battlePlayer.poisonChance > 0;
+  const dFreezeShown = battleDragon.freezeChance > 0;
+  const dPoisonShown = battleDragon.poisonChance > 0;
+
+  setDisplayIfChanged(pFreeze, pFreezeShown, "pFreezeShown");
+  setDisplayIfChanged(pPoison, pPoisonShown, "pPoisonShown");
+  setDisplayIfChanged(dFreeze, dFreezeShown, "dFreezeShown");
+  setDisplayIfChanged(dPoison, dPoisonShown, "dPoisonShown");
+
+  if (pFreezeShown && pFreeze) setTextIfChanged(pFreeze.querySelector("span"), String(battlePlayer.freezeChance), "pFreezeVal");
+  if (pPoisonShown && pPoison) setTextIfChanged(pPoison.querySelector("span"), String(battlePlayer.poisonChance), "pPoisonVal");
+  if (dFreezeShown && dFreeze) setTextIfChanged(dFreeze.querySelector("span"), String(battleDragon.freezeChance), "dFreezeVal");
+  if (dPoisonShown && dPoison) setTextIfChanged(dPoison.querySelector("span"), String(battleDragon.poisonChance), "dPoisonVal");
+
+  // Poison info: in perf mode, hide it entirely (big win; lots of updates)
+  const poisonInfo = battleUI.poisonInfo();
+  if (poisonInfo) {
+    if (dragonPerfMode()) {
+      poisonInfo.style.display = "none";
+    } else {
+      if (dragonPoisonStacks > 0) {
+        const dps = getPoisonDps();
+        const txt = `Poisons: ${dragonPoisonStacks} (−${formatNumber(dps)}/sec to Dragon HP)`;
+        poisonInfo.textContent =
+        `Poisons: ${dragonPoisonStacks} (−${formatNumber(dps)}/sec to Dragon HP)`;
+        if (_hudCache.poisonText !== txt) {
+          _hudCache.poisonText = txt;
+          poisonInfo.style.display = "block";
+          poisonInfo.textContent = txt;
+        }
+      } else {
+        if (_hudCache.poisonText !== "") {
+          _hudCache.poisonText = "";
+          poisonInfo.style.display = "none";
+          poisonInfo.textContent = "";
+        }
+      }
+    }
+  }
+
+  // Mana (throttled inside updateManaUI)
+  updateManaUI(false);
+}
+
+const playerColors = [
+  { r: 239, g: 0,   b: 0   },  // red
+  { r: 239, g: 119, b: 0   },  // orange
+  { r: 239, g: 239, b: 0   },  // yellow
+  { r: 119, g: 239, b: 0   },  // lightgreen
+  { r: 0,   g: 148, b: 51   }, // green
+  { r: 0,   g: 187, b: 239 },  // lightblue
+  { r: 0,   g: 51,   b: 239 }, // blue
+  { r: 119, g: 0,   b: 239 },  // purple
+  { r: 239, g: 119, b: 239 },  // pink
+  { r: 239, g: 239, b: 239 },  // white
+  { r: 119, g: 119, b: 119 },  // gray
+  { r: 119, g: 85,  b: 51  }   // brown
+];
+
+function updatePlayerIcon() {
+  const baseColor = playerColors[playerColorIndex];
+  const flashColor = getPlayerFlashColor(baseColor);
+
+  document.getElementById("playerIcon").style.background =
+    rgbToCss(flashColor);
+}
+
+let playerColorIndex = 0;
+
+function changePlayerColor(dir) {
+  playerColorIndex =
+    (playerColorIndex + dir + playerColors.length) % playerColors.length;
+  updatePlayerIcon();
+  saveGame(false);
+}
+
+// initialize
+updatePlayerIcon();
+
+document.getElementById("playerHP").textContent = baseStats.player.hp;
+document.getElementById("playerDamage").textContent = baseStats.player.damage;
+
+document.getElementById("dragonHP").textContent = dragonHP;
+document.getElementById("dragonDamage").textContent = dragonDamage;
+recalcDragonStats();
+updateDragonTabLabels();
+updateDragonRewardsUI();
+
+/* ---------------- MINING (Arrow-key depth + ores) ---------------- */
+
+const GRID_COLS = 7;
+const GRID_VIEW_ROWS = 10;
+
+// Bubble row is a one-time “row 0”
+const BUBBLE_DEPTH = 0;
+const FIRST_GRID_DEPTH = 1;
+
+let miningIsFalling = false;
+
+const KEY_SPAWN_CHANCE = 0.005; // 0.5%
+
+// Timers: store per-cell but ONLY ONE runs at a time (activeMiningKey)
+let miningActions = {};      // key -> action
+let activeMiningKey = null;  // only one timer runs
+
+// Prevent player + autominer mining the same cell
+let miningCellLocks = {}; // key -> "player" | "auto"
+
+function lockMiningCell(depth, col, owner) {
+  miningCellLocks[miningKey(depth, col)] = owner;
+}
+function unlockMiningCell(depth, col) {
+  delete miningCellLocks[miningKey(depth, col)];
+}
+function isCellLockedByOther(depth, col, owner) {
+  const k = miningKey(depth, col);
+  const v = miningCellLocks[k];
+  return v && v !== owner;
+}
+
+// Make tab tracking consistent everywhere
+if (typeof window.currentTab === "undefined") window.currentTab = "cards";
+
+// Ores in order
+const ORES = [
+  { id: "ruby",      name: "Ruby",      startDepth: 0,   css: "ore-ruby",      textCss: "ruby" },
+  { id: "topaz",     name: "Topaz",     startDepth: 50,  css: "ore-topaz",     textCss: "topaz" },
+  { id: "citrine",   name: "Citrine",   startDepth: 100, css: "ore-citrine",   textCss: "citrine" },
+  { id: "emerald",   name: "Emerald",   startDepth: 200, css: "ore-emerald",   textCss: "emerald" },
+  { id: "sapphire",  name: "Sapphire",  startDepth: 350, css: "ore-sapphire",  textCss: "sapphire" },
+  { id: "amethyst",  name: "Amethyst",  startDepth: 550, css: "ore-amethyst",  textCss: "amethyst" },
+  { id: "morganite", name: "Morganite", startDepth: 800, css: "ore-morganite", textCss: "morganite" }
+];
+
+miningClaimedCounts = new Array(ORES.length).fill(0);
+miningInitialized = true;
+
+const PROMOTE_CHANCE = 0.25;
+
+// Grid storage: miningRows[0] corresponds to depth 1
+const miningRows = [];
+const miningKeyRows = [];
+const miningMinedRows = [];
+
+let miningViewportTop = FIRST_GRID_DEPTH;
+
+// Bubble row storage (oreIndex per column)
+const miningBubbleRow = new Array(GRID_COLS).fill(null);
+let miningBubbleActive = true;
+
+// Claimed counts per ore index
+
+// Player state
+let miningPlayerCol = 3;             // 0..6
+let miningDepth = BUBBLE_DEPTH;      // starts in bubble row
+let miningCursorCol = miningPlayerCol;
+let miningCursorDepth = miningDepth;
+function syncCursorToIcon() {
+  miningCursorCol = miningPlayerCol;
+  miningCursorDepth = miningDepth;
+}
+
+function miningKey(depth, col) {
+  return `${depth},${col}`;
+}
+
+let miningDirt = 0;
+
+let miningMaxDepthReached = BUBBLE_DEPTH;
+
+function miningKey(depth, col) {
+  return `${depth},${col}`;
+}
+
+// ---------------- AUTOMINER ----------------
+let autominerUnlocked = false;
+let autominerActive = false;          // defaults inactive when bought
+let autominerStartDepth = FIRST_GRID_DEPTH; // user-settable
+let autominerDepth = FIRST_GRID_DEPTH;
+let autominerCol = 0;
+let autominerTimer = null;
+let returnSurfaceAvailableAt = 0;
+updateReturnSurfaceUI();
+
+let autominerCursorDepth = autominerDepth;
+let autominerCursorCol = autominerCol;
+// Autominer "standing" position (token)
+let autominerPosDepth = FIRST_GRID_DEPTH;
+let autominerPosCol = 0;
+
+// Autominer "target" (cursor)
+let autominerTargetDepth = FIRST_GRID_DEPTH;
+let autominerTargetCol = 0;
+
+function setAutominerCursor(d, c) {
+  autominerCursorDepth = d;
+  autominerCursorCol = c;
+  autominerTargetDepth = d;
+  autominerTargetCol = c;
+}
+
+// Only one autominer timer at a time
+let autominerAction = null; // { depth, col, startTime, durationMs, elapsedMs }
+
+const AUTOMINER_REQUIRED_GEM_PRODUCT = 1000000;
+
+const miningUpgrades = [
+  {
+    id: "dirtGain",
+    name: "Better Excavation",
+    desc: "Increase dirt gain",
+    max: Infinity,
+    effect: x => Math.pow(1.5, x),
+    cost: x => Math.floor(50 * Math.pow(2, x)),
+    format: v => `${formatNumber(v.toFixed(2))}× dirt`
+  },
+  {
+    id: "miningSpeed",
+    name: "Sharper Drill",
+    desc: "Increase mining speed",
+    max: Infinity,
+    effect: x => Math.pow(1.35, x),
+    cost: x => Math.floor(100 * Math.pow(1.2, x)),
+    format: v => `${formatNumber(v.toFixed(2))}× speed`
+  },
+  {
+    id: "keyChance",
+    name: "Metal Detector",
+    desc: "Increase key chance",
+    max: 15,
+    effect: x => 0.005 + 0.001 * x, // 0.5% + 0.1x%
+    cost: x => Math.floor(250 * Math.pow(1.8, x)),
+    format: v => `${(v * 100).toFixed(1)}% key chance`
+  },
+  {
+    id: "logBase",
+    name: "Better Value",
+    desc: "Lower log base for gem multiplier",
+    max: 15,
+    effect: x => Math.max(2, 10 - 0.5 * x),
+    cost: x => Math.floor(1000 * Math.pow(2, x)),
+    format: v => `${v.toFixed(1)}`
+  }
+];
+
+let miningUpgradeLevels = {};
+miningUpgrades.forEach(u => miningUpgradeLevels[u.id] = 0);
+
+function getMiningUpgradeEffect(id) {
+  const u = miningUpgrades.find(x => x.id === id);
+  return u.effect(miningUpgradeLevels[id]);
+}
+
+function isMiningUpgradeMaxed(u) {
+  return u.max !== Infinity && miningUpgradeLevels[u.id] >= u.max;
+}
+
+function isMiningActive() {
+  return window.currentTab === "mining" &&
+    !battleRunning &&
+    !document.body.classList.contains("modal-open");
+}
+
+function shouldIgnoreMiningKeys(e) {
+  const t = e.target;
+  if (!t) return false;
+  const tag = (t.tagName || "").toLowerCase();
+  return tag === "input" || tag === "textarea";
+}
+
+function rollOreForDrop(depth) {
+  // We want a guaranteed ore when popping
+  // Start at ruby, allow promotions if unlocked at this depth
+  let oreIndex = 0;
+  const maxIdx = maxUnlockedOreIndex(depth);
+
+  while (oreIndex < maxIdx && Math.random() < PROMOTE_CHANCE) {
+    oreIndex++;
+  }
+  return oreIndex;
+}
+
+function renderMiningAll(skipAutominerBar = false, skipUpgrades = false) {
+  miningMaxDepthReached = Math.max(miningMaxDepthReached, miningDepth);
+
+  tryGainDirtOnEnterNonOreCell();
+  tryClaimOreAtPlayer();
+  updateMiningHud();
+  renderMiningGrid();
+  renderMiningGemList();
+  updateMiningGemProductText();
+  updateMiningDirtOwnedText();
+  if (!skipUpgrades) renderMiningUpgrades();
+  if (!skipAutominerBar) renderAutominerBar();
+  updateReturnSurfaceUI();
+}
+
+function fadeOutBubbleRow() {
+  const bubbleEl = document.getElementById("miningBubbleRow");
+  if (!bubbleEl) return;
+
+  bubbleEl.classList.add("fading-out");
+
+  // After 1s (CSS transition duration), fully disable it
+  setTimeout(() => {
+    miningBubbleActive = false;
+    bubbleEl.classList.remove("fading-out");
+    renderMiningAll();
+  }, 1000);
+}
+
+/* --- Ruby chance: 0.05 * depth percent, capped at 50% at depth 1000 ---
+   0.05 * depth % = (0.05*depth)/100 = 0.0005*depth
+*/
+function rubyChanceAtDepth(depth) {
+  const d = Math.min(1000, Math.max(0, depth));
+  return Math.min(0.5, 0.0005 * d);
+}
+
+function maxUnlockedOreIndex(depth) {
+  let idx = 0;
+  for (let i = 0; i < ORES.length; i++) {
+    if (depth >= ORES[i].startDepth) idx = i;
+  }
+  return idx;
+}
+
+function generateOreIndexForCell(depth) {
+  if (Math.random() >= rubyChanceAtDepth(depth)) return null;
+
+  let oreIndex = 0;
+  const maxIdx = maxUnlockedOreIndex(depth);
+
+  while (oreIndex < maxIdx) {
+    if (Math.random() < PROMOTE_CHANCE) oreIndex++;
+    else break;
+  }
+  return oreIndex;
+}
+
+let rubyGuarantee6to10Done = false;
+
+function guaranteeRubyInRows6to10() {
+  // Only ever do this once per game session (or per save, later)
+  if (rubyGuarantee6to10Done) return;
+
+  const START_DEPTH = FIRST_GRID_DEPTH + 5; // 6
+  const END_DEPTH   = FIRST_GRID_DEPTH + 9; // 10
+
+  // If we haven't generated that far yet, do nothing for now
+  if (miningRows.length < 10) return;
+
+  // From this point on, we consider the guarantee "handled" forever.
+  // (Either ruby already exists naturally, or we will place one.)
+  rubyGuarantee6to10Done = true;
+
+  // If a ruby naturally spawned in depths 6..10, we're done.
+  for (let depth = START_DEPTH; depth <= END_DEPTH; depth++) {
+    for (let c = 0; c < GRID_COLS; c++) {
+      if (getMiningCell(depth, c) === 0) return;
+    }
+  }
+
+  // No ruby found: force place one.
+  // Prefer truly empty + no-key cells so we don't overwrite content.
+  const candidates = [];
+
+  for (let depth = START_DEPTH; depth <= END_DEPTH; depth++) {
+    for (let c = 0; c < GRID_COLS; c++) {
+      const ore = getMiningCell(depth, c);
+      const hasKey = getMiningKey(depth, c);
+      if ((ore === null || ore === undefined) && !hasKey) {
+        candidates.push({ depth, c });
+      }
+    }
+  }
+
+  // If no empty/no-key cells exist, fall back to empty cells (may remove a key)
+  if (candidates.length === 0) {
+    for (let depth = START_DEPTH; depth <= END_DEPTH; depth++) {
+      for (let c = 0; c < GRID_COLS; c++) {
+        const ore = getMiningCell(depth, c);
+        if (ore === null || ore === undefined) {
+          candidates.push({ depth, c });
+        }
+      }
+    }
+  }
+
+  // If still none (extremely unlikely), just bail safely
+  if (candidates.length === 0) return;
+
+  const pick = candidates[Math.floor(Math.random() * candidates.length)];
+
+  // If we landed on a key (fallback), remove it so ruby can occupy this square
+  if (getMiningKey(pick.depth, pick.c)) {
+    setMiningKey(pick.depth, pick.c, false);
+  }
+
+  setMiningCell(pick.depth, pick.c, 0);      // ruby
+  setMiningMined(pick.depth, pick.c, false); // not darkened
+}
+
+function ensureMiningRows(upToDepthInclusive) {
+  while ((miningRows.length + FIRST_GRID_DEPTH) <= upToDepthInclusive) {
+    const depth = miningRows.length + FIRST_GRID_DEPTH;
+
+    const row = [];
+    const keyRow = [];
+    const minedRow = [];
+
+    for (let c = 0; c < GRID_COLS; c++) {
+      const hasKey = Math.random() < getMiningUpgradeEffect("keyChance");
+
+      // If a key spawns, we make the ore empty so the key is the "thing" in that square
+      keyRow.push(hasKey);
+      row.push(hasKey ? null : generateOreIndexForCell(depth));
+
+      // Not mined yet
+      minedRow.push(false);
+    }
+
+    miningRows.push(row);
+    miningKeyRows.push(keyRow);
+    miningMinedRows.push(minedRow);
+  }
+
+  if (upToDepthInclusive >= FIRST_GRID_DEPTH + 9) {
+  guaranteeRubyInRows6to10();
+}
+}
+
+function getMiningDuration(depth, col) {
+  if (depth === FIRST_GRID_DEPTH) return 0;
+
+  let seconds = 30 * Math.pow(1.04, depth - 2);
+
+  const oreIndex = getMiningCell(depth, col);
+
+  if (oreIndex !== null && oreIndex !== undefined) {
+    const multipliers = [2, 4, 8, 16, 32, 64, 128];
+    seconds *= multipliers[oreIndex] || 1;
+  }
+
+  // Apply mining speed upgrade
+  const speedMult = getMiningUpgradeEffect("miningSpeed");
+  seconds /= speedMult;
+
+  return seconds * 1000;
+}
+
+function renderAutominerBar() {
+  const bar = document.getElementById("autominerBar");
+  if (!bar) return;
+
+  if (window.currentTab !== "mining") {
+    bar.innerHTML = "";
+    return;
+  }
+
+  const { X } = getMiningXpMultiplier(); // X is gem product (same as getGemProduct)
+
+  // Not bought yet: show big unlock button
+  if (!autominerUnlocked) {
+    const canBuy = X >= AUTOMINER_REQUIRED_GEM_PRODUCT;
+
+    bar.innerHTML = `
+      <button id="unlockAutominerBtn" ${canBuy ? "" : "disabled"}
+        style="${canBuy ? "" : "opacity:0.6;cursor:not-allowed;"}">
+        Unlock the Autominer: Requires Gem Product of 1,000,000
+      </button>
+    `;
+
+    const btn = document.getElementById("unlockAutominerBtn");
+    if (btn) {
+      btn.onclick = () => {
+        if (getGemProduct() < AUTOMINER_REQUIRED_GEM_PRODUCT) return;
+        autominerUnlocked = true;
+        autominerActive = false; // important: default inactive
+        autominerStartDepth = FIRST_GRID_DEPTH;
+        autominerDepth = FIRST_GRID_DEPTH;
+        autominerCol = 0;
+        stopAutominer(); // just in case
+        renderAutominerBar();
+        renderMiningAll();
+      };
+    }
+    return;
+  }
+
+  // Bought: show controls
+  bar.innerHTML = `
+    <div class="autominerControls">
+      <div>
+        Start the autominer at depth:
+        <input id="autominerStartDepthInput" type="text" inputmode="numeric" value="${autominerStartDepth}">
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;">
+        <label class="switch" title="Toggle autominer">
+          <input id="autominerToggle" type="checkbox" ${autominerActive ? "checked" : ""}>
+          <span class="slider"></span>
+        </label>
+        <div>
+          Autominer status:
+          <b>${autominerActive ? "Active" : "Inactive"}</b>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const input = document.getElementById("autominerStartDepthInput");
+  const toggle = document.getElementById("autominerToggle");
+
+  if (input) {
+    input.addEventListener("change", () => {
+      const raw = (input.value || "").trim();
+      if (!/^\d+$/.test(raw)) {
+        input.value = String(autominerStartDepth);
+        return;
+      }
+
+      const d = Number(raw);
+
+      // Clamp to valid grid depths and reached depth
+      const clamped = Math.max(FIRST_GRID_DEPTH, Math.min(d, miningMaxDepthReached));
+      autominerStartDepth = clamped;
+      input.value = String(clamped);
+
+      // If active, jump immediately to this depth
+      if (autominerActive) {
+        jumpAutominerToDepth(autominerStartDepth);
+        renderMiningAll();
+      }
+    });
+  }
+
+  if (toggle) {
+    toggle.addEventListener("change", () => {
+      autominerActive = !!toggle.checked;
+
+      if (autominerActive) {
+        startAutominer();
+        jumpAutominerToDepth(autominerStartDepth);
+      } else {
+        stopAutominer();
+      }
+
+      renderAutominerBar();
+      renderMiningAll();
+    });
+  }
+}
+
+function jumpAutominerToDepth(depth) {
+const dep = autominerDepth;
+const col = autominerCol;
+
+unlockMiningCell(dep, col);
+autominerAction = null;
+
+// Start token at the first mined cell we can stand on:
+// safest: stand at depth 1 col 0 if it exists, otherwise stand at current plan cell if mined.
+autominerPosDepth = autominerDepth;
+autominerPosCol = autominerCol;
+
+// Cursor points at the next planned target
+setAutominerCursor(autominerDepth, autominerCol);
+  const d = Math.max(FIRST_GRID_DEPTH, Math.min(depth, miningMaxDepthReached));
+  autominerDepth = d;
+  autominerCol = 0;
+  ensureMiningRows(autominerDepth);
+  setAutominerCursor(autominerDepth, autominerCol);
+}
+
+function autominerProcessCurrentCell() {
+  if (!autominerUnlocked || !autominerActive) return;
+
+  if (autominerDepth > miningMaxDepthReached) {
+    autominerActive = false;
+    stopAutominer();
+    renderAutominerBar();
+    renderMiningAll();
+    return;
+  }
+
+  ensureMiningRows(autominerDepth);
+
+  // Planned target (NEXT cell)
+  const depth = autominerDepth;
+  const col = autominerCol;
+
+  // Cursor always shows the next target (or current mining cell below)
+  setAutominerCursor(depth, col);
+
+  // ----- If currently mining something, just tick it -----
+  if (autominerAction) {
+    const ad = autominerAction.depth;
+    const ac = autominerAction.col;
+
+    // keep cursor on active mining cell
+    setAutominerCursor(ad, ac);
+
+    // if player is on it, or player has it reserved, wait
+    if (miningDepth === ad && miningPlayerCol === ac) return;
+    if (isCellLockedByOther(ad, ac, "auto")) return;
+
+    const elapsed = getAutominerElapsedMs(autominerAction);
+    if (elapsed < autominerAction.durationMs) return; // do NOT enter yet
+
+    // completed -> enter
+    autominerPosDepth = ad;
+    autominerPosCol = ac;
+
+    // claim key
+    if (getMiningKey(ad, ac)) {
+      keysOwned += 1;
+      stats.totalKeysGained += 1;
+      setMiningKey(ad, ac, false);
+    }
+
+    // claim ore / dirt
+    const oreIndex = getMiningCell(ad, ac);
+    if (oreIndex !== null && oreIndex !== undefined) {
+      const gemMult = getDragonGemMultiplier();
+const gain = Math.max(1, Math.floor(gemMult));
+
+miningClaimedCounts[oreIndex] += gain;
+stats.totalGemsGained += gain;
+      setMiningCell(ad, ac, null);
+      setMiningMined(ad, ac, true);
+    } else {
+      if (!getMiningMined(ad, ac)) {
+        const baseGain = Math.ceil(ad / 10);
+        const dirtMult = getMiningUpgradeEffect("dirtGain");
+        const gain = Math.ceil(baseGain * dirtMult);
+        miningDirt += gain;
+        stats.totalDirtGained += gain;
+        setMiningMined(ad, ac, true);
+      }
+    }
+
+    // clear + unlock
+    unlockMiningCell(ad, ac);
+    autominerAction = null;
+
+    // advance plan
+    autominerCol++;
+    if (autominerCol >= GRID_COLS) { autominerCol = 0; autominerDepth++; }
+
+    return;
+  }
+
+  // ----- Not currently mining: decide next action on (depth,col) -----
+
+  // never mine player's current square
+  if (miningDepth === depth && miningPlayerCol === col) return;
+
+  // never mine if player has a timer preserved on this cell
+  const k = miningKey(depth, col);
+  if (miningActions && miningActions[k]) return;
+  if (activeMiningKey === k) return;
+
+  // also respect locks
+  if (isCellLockedByOther(depth, col, "auto")) return;
+
+  // if already mined, stand + move on
+  if (getMiningMined(depth, col)) {
+    autominerPosDepth = depth;
+    autominerPosCol = col;
+
+    autominerCol++;
+    if (autominerCol >= GRID_COLS) { autominerCol = 0; autominerDepth++; }
+    return;
+  }
+
+  // start mining this cell (token stays where it is)
+  autominerAction = {
+    depth,
+    col,
+    durationMs: getMiningDuration(depth, col),
+    elapsedMs: 0,
+    startTime: Date.now()
+  };
+  lockMiningCell(depth, col, "auto");
+}
+
+function startAutominer() {
+  if (autominerTimer) return;
+  autominerTimer = setInterval(() => {
+    autominerProcessCurrentCell();
+    // keep UI responsive
+    if (window.currentTab === "mining") renderMiningAll(true);
+    else updatePlayerUI();
+  }, 120); // speed; tweak as desired
+}
+
+function stopAutominer() {
+  if (!autominerTimer) return;
+  clearInterval(autominerTimer);
+  autominerTimer = null;
+}
+
+function returnToSurface() {
+  // guard
+  if (Date.now() < returnSurfaceAvailableAt) return;
+
+  // ✅ set cooldown FIRST (so any render after this shows timer)
+  returnSurfaceAvailableAt = Date.now() + 8 * 60 * 60 * 1000;
+
+  // ✅ update button immediately
+  updateReturnSurfaceUI();
+
+  // ---- now do all your resets ----
+  miningDepth = BUBBLE_DEPTH;
+  miningPlayerCol = 3;
+
+  miningActions = {};
+  activeMiningKey = null;
+  syncCursorToIcon();
+
+  autominerAction = null;
+  autominerDepth = FIRST_GRID_DEPTH;
+  autominerCol = 0;
+
+  autominerPosDepth = FIRST_GRID_DEPTH;
+  autominerPosCol = 0;
+
+  autominerCursorDepth = FIRST_GRID_DEPTH;
+  autominerCursorCol = 0;
+
+  autominerTargetDepth = FIRST_GRID_DEPTH;
+  autominerTargetCol = 0;
+
+  // Clear locks too (important)
+  miningCellLocks = {};
+
+  stats.timesReturnedToSurface += 1;
+
+  miningRows.length = 0;
+  miningKeyRows.length = 0;
+  miningMinedRows.length = 0;
+
+  miningViewportTop = FIRST_GRID_DEPTH;
+
+  miningBubbleActive = true;
+  for (let c = 0; c < GRID_COLS; c++) miningBubbleRow[c] = null;
+
+  miningMaxDepthReached = BUBBLE_DEPTH;
+
+  if (typeof rubyGuarantee6to10Done !== "undefined") rubyGuarantee6to10Done = false;
+
+  if (typeof autominerUnlocked !== "undefined") {
+    autominerActive = false;
+    if (typeof stopAutominer === "function") stopAutominer();
+  }
+
+  const bubbleEl = document.getElementById("miningBubbleRow");
+  if (bubbleEl) {
+    bubbleEl.style.display = "grid";
+    bubbleEl.classList.remove("fading-out");
+  }
+
+  renderMiningAll();
+  if (typeof renderAutominerBar === "function") renderAutominerBar();
+
+  // ✅ ensure the cooldown still shows even if render replaced the button
+  updateReturnSurfaceUI();
+
+  saveGame(false);
+}
+
+function updateReturnSurfaceUI() {
+  const btn = document.getElementById("returnToSurfaceBtn");
+  if (!btn) return;
+
+  const remainingMs = returnSurfaceAvailableAt - Date.now();
+  if (remainingMs > 0) {
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+    btn.style.cursor = "not-allowed";
+    btn.textContent = formatCooldownTime(remainingMs / 1000);
+  } else {
+    btn.disabled = false;
+    btn.style.opacity = "";
+    btn.style.cursor = "";
+    btn.textContent = "Return to Surface";
+  }
+}
+
+setInterval(updateReturnSurfaceUI, 500);
+
+let teleportErrorTimeout = null;
+
+function flashTeleportError() {
+  const el = document.getElementById("teleportError");
+  if (!el) return;
+
+  el.style.opacity = "1";
+
+  if (teleportErrorTimeout) clearTimeout(teleportErrorTimeout);
+  teleportErrorTimeout = setTimeout(() => {
+    el.style.opacity = "0";
+  }, 3000);
+}
+
+function pickMinedColumnAtDepth(depth) {
+  const minedCols = [];
+  for (let c = 0; c < GRID_COLS; c++) {
+    if (getMiningMined(depth, c)) minedCols.push(c);
+  }
+  if (minedCols.length === 0) return null;
+  return minedCols[Math.floor(Math.random() * minedCols.length)];
+}
+
+function teleportToDepth(targetDepth) {
+  // Must be a natural number depth, and must be reached already
+  if (!Number.isInteger(targetDepth) || targetDepth < FIRST_GRID_DEPTH) {
+    flashTeleportError();
+    return;
+  }
+
+  if (targetDepth > miningMaxDepthReached) {
+    flashTeleportError();
+    return;
+  }
+
+  // Ensure rows exist so mined state is available
+  ensureMiningRows(targetDepth);
+
+  // Must teleport into a cell that has already been mined
+  const col = pickMinedColumnAtDepth(targetDepth);
+  if (col === null) {
+    flashTeleportError();
+    return;
+  }
+
+  // If bubble is still active, disable it (teleporting implies you’re in the grid)
+  if (miningBubbleActive) {
+    miningBubbleActive = false;
+    const bubbleEl = document.getElementById("miningBubbleRow");
+    if (bubbleEl) bubbleEl.style.display = "none";
+  }
+
+  miningDepth = targetDepth;
+  miningPlayerCol = col;
+
+  renderMiningAll();
+}
+
+function teleportToDepthFromUI() {
+  const input = document.getElementById("teleportDepthInput");
+  if (!input) return;
+
+  const raw = (input.value || "").trim();
+
+  // Only accept natural numbers (no decimals, no negatives, no letters)
+  if (!/^\d+$/.test(raw)) {
+    flashTeleportError();
+    return;
+  }
+
+  const depth = Number(raw);
+  teleportToDepth(depth);
+}
+
+function renderMiningUpgrades() {
+  const container = document.getElementById("miningUpgrades");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  miningUpgrades.forEach(upg => {
+    const lvl = miningUpgradeLevels[upg.id];
+    const cost = Math.floor(upg.cost(lvl));
+    const curr = upg.effect(lvl);
+    const next = upg.effect(lvl + 1);
+
+    const affordable = Math.floor(miningDirt) >= cost && !isMiningUpgradeMaxed(upg);
+
+    const div = document.createElement("div");
+    div.className = "upgrade";
+
+    div.innerHTML = `
+      <b>${upg.name}</b> — ${upg.desc}<br>
+<div>
+  Effect: ${upg.format(curr)}
+  ${isMiningUpgradeMaxed(upg) ? '<span style="color:#FF4444;"> (maxed)</span>' : ''}
+  <span class="preview"> → ${upg.format(next)}</span>
+</div>
+<button ${!affordable ? "disabled" : ""}>
+  Cost: ${formatNumber(cost)} Dirt
+</button>
+    `;
+
+    const btn = div.querySelector("button");
+    const preview = div.querySelector(".preview");
+
+    preview.style.display = "none";
+
+    if (affordable) {
+      btn.onmouseenter = () => preview.style.display = "inline";
+      btn.onmouseleave = () => preview.style.display = "none";
+    }
+
+    btn.onclick = () => {
+      stats.totalMiningUpgradesPurchased += 1;
+      if (!affordable) return;
+
+      miningDirt -= cost;
+      miningUpgradeLevels[upg.id]++;
+
+      // Update UI
+      renderMiningAll();
+      renderMiningUpgrades();
+      updatePlayerUI(); // so XP/sec display updates immediately (multiplier may change)
+    };
+
+    container.appendChild(div);
+  });
+}
+
+function getMiningKey(depth, col) {
+  const idx = depth - FIRST_GRID_DEPTH;
+  return miningKeyRows[idx]?.[col] ?? false;
+}
+
+function setMiningKey(depth, col, value) {
+  const idx = depth - FIRST_GRID_DEPTH;
+  miningKeyRows[idx][col] = value;
+}
+
+function getMiningCell(depth, col) {
+  const idx = depth - FIRST_GRID_DEPTH;
+  return miningRows[idx]?.[col] ?? null;
+}
+
+function setMiningCell(depth, col, oreIndexOrNull) {
+  const idx = depth - FIRST_GRID_DEPTH;
+  miningRows[idx][col] = oreIndexOrNull;
+
+  // If we place an ore into a cell, it shouldn't be treated as "mined empty"
+  if (oreIndexOrNull !== null && oreIndexOrNull !== undefined) {
+    if (miningMinedRows[idx]) miningMinedRows[idx][col] = false;
+  }
+}
+
+/* --- Bubble row helpers --- */
+
+function generateBubbleOreIndex() {
+  let oreIndex = 0;
+  const maxIdx = maxUnlockedOreIndex(FIRST_GRID_DEPTH);
+  while (oreIndex < maxIdx && Math.random() < PROMOTE_CHANCE) oreIndex++;
+  return oreIndex;
+}
+
+function ensureBubbleRowFilled() {
+  if (!miningBubbleActive) return;
+  for (let c = 0; c < GRID_COLS; c++) {
+    if (miningBubbleRow[c] === null) miningBubbleRow[c] = generateBubbleOreIndex();
+  }
+}
+
+function popBubbleAtPlayer() {
+  if (!miningBubbleActive) return;
+
+  ensureBubbleRowFilled();
+
+  const c = miningPlayerCol;
+  const oreIndex = miningBubbleRow[c];
+  if (oreIndex === null) return;
+
+  ensureMiningRows(FIRST_GRID_DEPTH);
+  setMiningCell(FIRST_GRID_DEPTH, c, oreIndex);
+
+  miningBubbleRow[c] = null;
+}
+
+/* --- Claiming --- */
+
+function tryGainDirtOnEnterNonOreCell() {
+  if (miningDepth < FIRST_GRID_DEPTH) return;
+
+  // Ensure storage exists for this depth
+  ensureMiningRows(miningDepth);
+
+  const oreIndex = getMiningCell(miningDepth, miningPlayerCol);
+
+  // Only non-ore cells (oreIndex === null) count
+  if (oreIndex !== null && oreIndex !== undefined) return;
+
+  // Only pay once per cell
+  if (getMiningMined(miningDepth, miningPlayerCol)) return;
+
+  const baseGain = Math.ceil(miningDepth / 10);
+  const dirtMult = getMiningUpgradeEffect("dirtGain"); // 1.5^X
+  const gain = Math.ceil(baseGain * dirtMult);
+  miningDirt += gain;
+  stats.totalDirtGained += gain;
+
+  setMiningMined(miningDepth, miningPlayerCol, true);
+}
+
+function tryClaimOreAtPlayer() {
+  if (miningDepth < FIRST_GRID_DEPTH) return;
+
+  // If you use the falling animation flag, keep this:
+  if (typeof miningIsFalling !== "undefined" && miningIsFalling) return;
+
+  // Claim key if present
+  if (getMiningKey(miningDepth, miningPlayerCol)) {
+    keysOwned += 1;
+    stats.totalKeysGained += 1;
+    setMiningKey(miningDepth, miningPlayerCol, false);
+  }
+
+  // Claim ore if present
+  const oreIndex = getMiningCell(miningDepth, miningPlayerCol);
+  if (oreIndex === null || oreIndex === undefined) return;
+
+  // Record gem
+  const gemMult = getDragonGemMultiplier();
+const gain = Math.max(1, Math.floor(gemMult)); // integer gems
+
+miningClaimedCounts[oreIndex] += gain;
+stats.totalGemsGained += gain;
+
+  // Remove ore from the grid
+  setMiningCell(miningDepth, miningPlayerCol, null);
+
+  // IMPORTANT: mark this cell as "mined" so:
+  // 1) it turns #0f0f1f
+  // 2) it will NEVER grant "enter empty cell" dirt later
+  setMiningMined(miningDepth, miningPlayerCol, true);
+}
+
+/* --- HUD --- */
+
+function updateMiningHud() {
+  const depthEl = document.getElementById("miningDepthText");
+  const nextEl = document.getElementById("miningNextOreText");
+
+  const autoEl = document.getElementById("autominerDepthText");
+
+if (autominerUnlocked) {
+  autoEl.style.display = "block";
+
+  autoEl.textContent = autominerActive
+    ? `Autominer depth: ${formatNumber(autominerDepth)}`
+    : `Autominer depth: Inactive`;
+
+} else {
+  autoEl.style.display = "none";
+}
+
+  if (depthEl) {
+    if (miningBubbleActive && miningDepth === BUBBLE_DEPTH) depthEl.textContent = `Depth: Bubble`;
+    else depthEl.textContent = `Depth: ${formatNumber(miningDepth)}`;
+  }
+
+  // “Next ore” only advances after claiming at least one of each prior tier in order
+  let progress = -1;
+  for (let i = 0; i < ORES.length; i++) {
+    if (miningClaimedCounts[i] > 0) progress = i;
+    else break;
+  }
+
+  const nextIdx = progress + 1;
+
+  if (nextEl) {
+    if (nextIdx >= ORES.length) {
+      nextEl.innerHTML = `Next ore: <span class="oreName morganite">None</span> (all unlocked)`;
+    } else {
+      const next = ORES[nextIdx];
+      nextEl.innerHTML =
+        `Next ore: <span class="oreName ${next.textCss}">${next.name}</span> ` +
+        `(starting at depth ${next.startDepth})`;
+    }
+  }
+}
+
+function updateMiningDirtOwnedText() {
+  const el = document.getElementById("miningDirtOwnedText");
+  if (!el) return;
+
+  el.innerHTML =
+    `You have <strong>${formatNumber(Math.floor(miningDirt))}</strong>` +
+    `<strong><span style="color:#8b5a2b"> Dirt</span></strong>` +
+    `<div style="font-size:12px;color:#aaa;margin-top:6px;">` +
+    `You'll gain more dirt at lower depths!` +
+    `</div>`;
+}
+
+function getMiningMined(depth, col) {
+  const idx = depth - FIRST_GRID_DEPTH;
+  return miningMinedRows[idx]?.[col] ?? false;
+}
+
+function setMiningMined(depth, col, value) {
+  const idx = depth - FIRST_GRID_DEPTH;
+  miningMinedRows[idx][col] = value;
+}
+
+/* --- Rendering --- */
+
+function renderMiningGrid() {
+  const viewport = document.getElementById("miningGridViewport");
+  const bubbleEl = document.getElementById("miningBubbleRow");
+  if (!viewport) return;
+
+  /* ---------------- Bubble Row ---------------- */
+/* ---------------- Bubble Row ---------------- */
+/* ---------------- Bubble Row ---------------- */
+if (bubbleEl) {
+  bubbleEl.innerHTML = "";
+
+  if (miningBubbleActive) {
+    bubbleEl.style.display = "grid";
+
+    for (let c = 0; c < GRID_COLS; c++) {
+      const cell = document.createElement("div");
+      cell.className = "gridCell bubbleCell";
+
+      // Only bubble-row player marker
+      if (miningDepth === BUBBLE_DEPTH && c === miningPlayerCol) {
+        cell.classList.add("miningPlayerHere");
+      }
+
+      bubbleEl.appendChild(cell);
+    }
+  } else {
+    bubbleEl.style.display = "none";
+  }
+}
+
+  /* ---------------- Viewport Scrolling ----------------
+     Goal: start scrolling when player reaches visible row 6 (index 5),
+     leaving 4 preview rows beneath. Grid rows start at FIRST_GRID_DEPTH (1).
+  */
+  if (miningDepth < FIRST_GRID_DEPTH) {
+    // Player still in bubble row (or invalid): show top of grid
+    miningViewportTop = FIRST_GRID_DEPTH;
+  } else if (miningDepth < FIRST_GRID_DEPTH + 5) {
+    // depths 1..5: no scrolling yet
+    miningViewportTop = FIRST_GRID_DEPTH;
+  } else {
+    // depth 6+: keep player pinned to visible row 6
+    miningViewportTop = miningDepth - 5;
+  }
+  miningViewportTop = Math.max(FIRST_GRID_DEPTH, miningViewportTop);
+
+  /* ---------------- Ensure Rows Exist ---------------- */
+  const lastDepthNeeded = miningViewportTop + GRID_VIEW_ROWS - 1;
+  ensureMiningRows(lastDepthNeeded);
+
+  /* ---------------- Render Grid Viewport ---------------- */
+  viewport.innerHTML = "";
+
+  for (let r = 0; r < GRID_VIEW_ROWS; r++) {
+    const globalDepth = miningViewportTop + r; // absolute depth (>=1)
+    const rowIndex = globalDepth - FIRST_GRID_DEPTH;
+
+    // Defensive: row might not exist if something went wrong; treat as empty
+    const row = miningRows[rowIndex] || new Array(GRID_COLS).fill(null);
+
+    for (let c = 0; c < GRID_COLS; c++) {
+      const cell = document.createElement("div");
+      cell.className = "gridCell";
+
+      const oreIndex = row[c];
+if (oreIndex !== null && oreIndex !== undefined) {
+  cell.classList.add(ORES[oreIndex].css);
+}
+
+if (autominerUnlocked && autominerActive &&
+    globalDepth === autominerCursorDepth && c === autominerCursorCol) {
+  cell.classList.add("autominerCursorHere");
+}
+
+const kAction = miningKey(globalDepth, c);
+const action = miningActions[kAction];
+
+if (action) {
+  const elapsed = getActionElapsedMs(action);
+  const pct = Math.min(1, elapsed / action.durationMs);
+  const secondsLeft = Math.max(0, Math.ceil((action.durationMs - elapsed) / 1000));
+
+  cell.innerHTML = `
+    <div style="font-size:12px;color:white;">${secondsLeft}s</div>
+    <div style="
+      width:70%;
+      height:6px;
+      background:#333;
+      margin:6px auto 0;
+      border-radius:999px;
+      overflow:hidden;
+    ">
+      <div style="
+        width:${pct * 100}%;
+        height:100%;
+        background:white;
+        border-radius:999px;
+      "></div>
+    </div>
+  `;
+  }
+// ---- Autominer timer overlay ----
+if (autominerUnlocked && autominerActive && autominerAction &&
+    autominerAction.depth === globalDepth && autominerAction.col === c) {
+
+  const elapsed = getAutominerElapsedMs(autominerAction);
+  const pct = Math.min(1, elapsed / autominerAction.durationMs);
+  const secondsLeft = Math.max(0, Math.ceil((autominerAction.durationMs - elapsed) / 1000));
+
+  // If player timer already wrote HTML here, append below it
+  cell.innerHTML += `
+    <div style="font-size:11px;color:#ddd;margin-top:4px;">${secondsLeft}s</div>
+    <div style="
+      width:70%;
+      height:6px;
+      background:#333;
+      margin:6px auto 0;
+      border-radius:999px;
+      overflow:hidden;
+    ">
+      <div style="
+        width:${pct * 100}%;
+        height:100%;
+        background:white;
+        border-radius:999px;
+      "></div>
+    </div>
+  `;
+}
+
+if (settings.miningColorblindMode && oreIndex !== null && oreIndex !== undefined) {
+  // Each ore gets a unique symbol (simple + readable)
+  const symbols = ["◆", "▲", "●", "■", "★", "✦", "✚"]; // one per ore
+  const sym = document.createElement("div");
+  sym.className = "oreSymbol";
+  sym.textContent = symbols[oreIndex] ?? "?";
+  cell.appendChild(sym);
+}
+
+// If this is an empty (non-ore) cell we've already "mined" for dirt, tint it dark
+if ((oreIndex === null || oreIndex === undefined) && getMiningMined(globalDepth, c)) {
+  cell.classList.add("minedEmptyCell");
+}
+
+// Key emoji overlay
+if (getMiningKey(globalDepth, c)) {
+  const k = document.createElement("div");
+  k.className = "gridKeyEmoji";
+  k.textContent = "🔑";
+  cell.appendChild(k);
+}
+
+if (globalDepth === miningDepth && c === miningPlayerCol) {
+  cell.classList.add("miningPlayerHere");
+}
+if (globalDepth === miningCursorDepth && c === miningCursorCol) {
+  cell.classList.add("miningCursorHere");
+}
+
+if (autominerUnlocked && autominerActive &&
+    globalDepth === autominerPosDepth && c === autominerPosCol) {
+  cell.classList.add("autominerHere");
+}
+
+viewport.appendChild(cell);
+
+    }
+  }
+}
+
+function renderMiningGemList() {
+  const el = document.getElementById("miningGemList");
+  if (!el) return;
+
+  let html = `<div class="title">Your Gems:</div>`;
+  let anyShown = false;
+
+  for (let i = 0; i < ORES.length; i++) {
+    const ore = ORES[i];
+    const count = miningClaimedCounts[i] || 0;
+
+    if (count <= 0) continue; // ← hide zero-count gems
+    anyShown = true;
+
+    html += `
+      <div class="gemRow">
+        <span class="gemName oreName ${ore.textCss}">${ore.name}</span>
+        <span class="gemCount">${formatNumber(count)}</span>
+      </div>
+    `;
+  }
+
+  // Optional: if no gems yet, show a subtle placeholder
+  if (!anyShown) {
+    html += `<div style="color:#888;font-size:13px;">(You don't have any gems! Go find some, ya floofer!)</div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function getGemProduct() {
+  // Product of (count + 1) so 0 gems still contributes 1
+  let prod = 1;
+  for (let i = 0; i < miningClaimedCounts.length; i++) {
+    prod *= (miningClaimedCounts[i] + 1);
+  }
+  return prod;
+}
+
+function getMiningXpMultiplier() {
+  const X = getGemProduct();
+
+  const B = getMiningUpgradeEffect("logBase");
+  const logBaseX = (X <= 1) ? 0 : (Math.log(X) / Math.log(B));
+
+  const base = 1 + 4 * logBaseX;
+  const Y = Math.pow(base, 1.2);
+
+  return { X, Y, base, B };
+}
+
+function updateMiningGemProductText() {
+  const el = document.getElementById("miningGemProductText");
+  if (!el) return;
+
+  const { X, Y } = getMiningXpMultiplier();
+  el.innerHTML =
+  `Your current gem product is <strong>${formatNumber(X)}</strong>, which multiplies your XP gain by ` +
+  `<span class="xpMult">${formatNumber(Y.toFixed ? Number(Y.toFixed(2)) : Y)}×</span>`;
+}
+
+function animateDropFromTo(fromRect, toRect, oreIndex, onDone) {
+  const fly = document.createElement("div");
+  fly.className = ORES[oreIndex].css;
+
+  // Make it look like a gem
+  fly.style.position = "fixed";
+  fly.style.width = "22px";
+  fly.style.height = "22px";
+  fly.style.borderRadius = "999px";
+  fly.style.left = (fromRect.left + fromRect.width / 2 - 11) + "px";
+  fly.style.top  = (fromRect.top  + fromRect.height / 2 - 11) + "px";
+  fly.style.zIndex = "9999";
+  fly.style.pointerEvents = "none";
+  fly.style.boxShadow = "0 0 10px rgba(255,255,255,0.25)";
+
+  document.body.appendChild(fly);
+
+  // Force layout so the browser “commits” the initial position
+  fly.getBoundingClientRect();
+
+  const dx = (toRect.left + toRect.width / 2 - 11) - (fromRect.left + fromRect.width / 2 - 11);
+  const dy = (toRect.top  + toRect.height / 2 - 11) - (fromRect.top  + fromRect.height / 2 - 11);
+
+  fly.style.transition = "transform 420ms ease-in";
+  fly.style.transform = `translate(${dx}px, ${dy}px)`;
+
+  fly.addEventListener("transitionend", () => {
+    fly.remove();
+    onDone?.();
+  }, { once: true });
+}
+
+function animatePlayerFall(fromRect, toRect, onDone) {
+  miningIsFalling = true;
+  document.body.classList.add("mining-falling");
+
+  const fly = document.createElement("div");
+  fly.className = "miningPlayerToken";
+
+  fly.style.position = "fixed";
+  fly.style.left = (fromRect.left + fromRect.width / 2 - 9) + "px";
+  fly.style.top  = (fromRect.top  + fromRect.height / 2 - 9) + "px";
+  fly.style.zIndex = "9999";
+  fly.style.pointerEvents = "none";
+
+  document.body.appendChild(fly);
+
+  // Force layout so transition triggers reliably
+  fly.getBoundingClientRect();
+
+  const dx = (toRect.left + toRect.width / 2 - 9) - (fromRect.left + fromRect.width / 2 - 9);
+  const dy = (toRect.top  + toRect.height / 2 - 9) - (fromRect.top  + fromRect.height / 2 - 9);
+
+  fly.style.transition = "transform 420ms ease-in";
+  fly.style.transform = `translate(${dx}px, ${dy}px)`;
+
+  fly.addEventListener("transitionend", () => {
+    fly.remove();
+    miningIsFalling = false;
+    document.body.classList.remove("mining-falling");
+    onDone?.();
+  }, { once: true });
+}
+
+/* --- Movement --- */
+
+function pauseActiveMining() {
+  if (!activeMiningKey) return;
+  const a = miningActions[activeMiningKey];
+  if (!a || !a.startTime) return;
+  a.elapsedMs = (a.elapsedMs || 0) + (Date.now() - a.startTime);
+  a.startTime = null;
+}
+
+function startOrResumeMining(depth, col) {
+  if (isCellLockedByOther(depth, col, "player")) {
+    // autominer owns this cell right now; do nothing
+    return;
+  }
+  const key = miningKey(depth, col);
+
+  // only one timer runs at a time
+  pauseActiveMining();
+
+  if (!miningActions[key]) {
+    miningActions[key] = {
+      depth,
+      col,
+      durationMs: getMiningDuration(depth, col),
+      elapsedMs: 0,
+      startTime: null
+    };
+    lockMiningCell(depth, col, "player");
+  }
+
+  const a = miningActions[key];
+  // if duration could change (upgrade purchased), keep it consistent per-start:
+  if (!a.durationMs) a.durationMs = getMiningDuration(depth, col);
+
+  a.startTime = Date.now();
+  activeMiningKey = key;
+}
+
+function getActionElapsedMs(a) {
+  const running = a.startTime ? (Date.now() - a.startTime) : 0;
+  return (a.elapsedMs || 0) + running;
+}
+
+function miningMoveLeft() {
+  // Bubble row: move freely, no timers
+  if (miningDepth === BUBBLE_DEPTH) {
+    miningPlayerCol = Math.max(0, miningPlayerCol - 1);
+    miningCursorCol = miningPlayerCol;
+    miningCursorDepth = miningDepth;
+    renderMiningAll();
+    return;
+  }
+
+  // Normal grid movement: target adjacent cell
+  const targetDepth = miningDepth;
+  const targetCol = Math.max(0, miningPlayerCol - 1);
+
+  miningCursorDepth = targetDepth;
+  miningCursorCol = targetCol;
+
+  const mined = getMiningMined(targetDepth, targetCol);
+
+  if (mined) {
+    pauseActiveMining();
+    miningDepth = targetDepth;
+    miningPlayerCol = targetCol;
+    syncCursorToIcon();
+    renderMiningAll();
+  } else {
+    startOrResumeMining(targetDepth, targetCol);
+    renderMiningAll(true);
+  }
+}
+
+function miningMoveRight() {
+  // Bubble row: move freely, no timers
+  if (miningDepth === BUBBLE_DEPTH) {
+    miningPlayerCol = Math.min(GRID_COLS - 1, miningPlayerCol + 1);
+    miningCursorCol = miningPlayerCol;
+    miningCursorDepth = miningDepth;
+    renderMiningAll();
+    return;
+  }
+
+  const targetDepth = miningDepth;
+  const targetCol = Math.min(GRID_COLS - 1, miningPlayerCol + 1);
+
+  miningCursorDepth = targetDepth;
+  miningCursorCol = targetCol;
+
+  const mined = getMiningMined(targetDepth, targetCol);
+
+  if (mined) {
+    pauseActiveMining();
+    miningDepth = targetDepth;
+    miningPlayerCol = targetCol;
+    syncCursorToIcon();
+    renderMiningAll();
+  } else {
+    startOrResumeMining(targetDepth, targetCol);
+    renderMiningAll(true);
+  }
+}
+
+function miningMoveDown() {
+  // ✅ Bubble row -> depth 1 is ALWAYS allowed, ALWAYS instant
+  if (miningBubbleActive && miningDepth === BUBBLE_DEPTH) {
+    const bubbleEl = document.getElementById("miningBubbleRow");
+    const viewport = document.getElementById("miningGridViewport");
+
+    // Capture bubble cell rect BEFORE fade
+    let fromRect = null;
+    if (bubbleEl) {
+      const cells = bubbleEl.querySelectorAll(".bubbleCell");
+      const fromCell = cells[miningPlayerCol];
+      if (fromCell) fromRect = fromCell.getBoundingClientRect();
+    }
+
+    // ✅ Enter depth 1 instantly
+    miningDepth = FIRST_GRID_DEPTH;
+    ensureMiningRows(miningDepth);
+
+    // cursor follows icon
+    syncCursorToIcon();
+
+    renderMiningAll(); // ensure grid exists
+
+    // Find target grid cell rect
+    let toRect = null;
+    if (viewport) {
+      const rowIndex = FIRST_GRID_DEPTH - miningViewportTop; // should be 0
+      const targetIndex = rowIndex * GRID_COLS + miningPlayerCol;
+      const targetCell = viewport.children[targetIndex];
+      if (targetCell) toRect = targetCell.getBoundingClientRect();
+    }
+
+    // Start fade-out (does NOT immediately hide)
+    fadeOutBubbleRow();
+
+    if (fromRect && toRect) {
+      animatePlayerFall(fromRect, toRect, () => renderMiningAll());
+    } else {
+      renderMiningAll();
+    }
+
+    return; // ✅ don't run timer logic
+  }
+
+  // ---- normal in-grid "down" movement (timer rules apply) ----
+  if (miningDepth < FIRST_GRID_DEPTH) return;
+
+  const targetDepth = miningDepth + 1;
+  const targetCol = miningPlayerCol;
+
+  ensureMiningRows(targetDepth);
+
+  miningCursorDepth = targetDepth;
+  miningCursorCol = targetCol;
+
+  const mined = getMiningMined(targetDepth, targetCol);
+
+  if (mined) {
+    pauseActiveMining();
+    miningDepth = targetDepth;
+    syncCursorToIcon();
+    renderMiningAll();
+  } else {
+    startOrResumeMining(targetDepth, targetCol);
+    renderMiningAll(true);
+  }
+}
+
+function miningMoveUp() {
+  // Bubble row: cannot go up
+  if (miningDepth === BUBBLE_DEPTH) return;
+
+  // If at depth 1, just clamp there
+  if (miningDepth <= FIRST_GRID_DEPTH) {
+    miningDepth = FIRST_GRID_DEPTH;
+    syncCursorToIcon();
+    renderMiningAll();
+    return;
+  }
+
+  const targetDepth = miningDepth - 1;
+  const targetCol = miningPlayerCol;
+
+  ensureMiningRows(targetDepth);
+
+  // cursor moves to target regardless
+  miningCursorDepth = targetDepth;
+  miningCursorCol = targetCol;
+
+  const mined = getMiningMined(targetDepth, targetCol) || targetDepth === FIRST_GRID_DEPTH;
+
+  if (mined) {
+    pauseActiveMining();
+    miningDepth = targetDepth;
+    miningPlayerCol = targetCol;
+    syncCursorToIcon();
+    renderMiningAll();
+  } else {
+    startOrResumeMining(targetDepth, targetCol);
+    renderMiningAll(true);
+  }
+}
+
+function startMiningTimerLoop() {
+  setInterval(() => {
+    if (!activeMiningKey) return;
+
+    const a = miningActions[activeMiningKey];
+    if (!a) { activeMiningKey = null; return; }
+
+    const elapsed = getActionElapsedMs(a);
+
+    if (elapsed >= a.durationMs) {
+      // auto-enter the mined cell (icon moves)
+      miningDepth = a.depth;
+      miningPlayerCol = a.col;
+
+      // clear action
+      unlockMiningCell(a.depth, a.col);
+      delete miningActions[activeMiningKey];
+      activeMiningKey = null;
+
+      // cursor follows icon after completion
+      syncCursorToIcon();
+
+      renderMiningAll();
+      return;
+    }
+
+    // keep UI updating while timer runs
+    renderMiningAll(true);
+  }, 100);
+}
+
+function getAutominerElapsedMs(a) {
+  const running = a.startTime ? (Date.now() - a.startTime) : 0;
+  return (a.elapsedMs || 0) + running;
+}
+
+/* --- Controls (disable scroll while mining tab is active) --- */
+window.addEventListener("keydown", (e) => {
+  if (!isMiningActive()) return;
+  if (shouldIgnoreMiningKeys(e)) return;
+
+  if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(e.key)) {
+    e.preventDefault();
+  }
+
+  if (e.key === "ArrowLeft") miningMoveLeft();
+  else if (e.key === "ArrowRight") miningMoveRight();
+  else if (e.key === "ArrowDown") miningMoveDown();
+  else if (e.key === "ArrowUp") {
+    if (miningBubbleActive && miningDepth === BUBBLE_DEPTH) return;
+    miningMoveUp();
+  }
+}, { passive: false });
+
+function renderAchievements() {
+  const grid = document.getElementById("achievementsGrid");
+  if (!grid) return;
+
+  grid.innerHTML = "";
+
+  let anyClaimable = false;
+
+  achievements.forEach(a => {
+    const isClaimable = !a.claimed && a.check();
+
+    // Trigger popup ONLY once when it first becomes claimable
+    if (isClaimable && !a.notified) {
+      showAchievementPopup(a.name);
+      a.notified = true;
+    }
+
+    if (isClaimable) anyClaimable = true;
+
+    const box = document.createElement("div");
+    box.className = "achievementBox";
+    if (a.claimed) box.classList.add("claimed");
+
+    box.innerHTML = `
+      <div>
+        <b>${a.name}</b>
+        <div style="font-size:13px;color:#aaa;margin-top:4px;">
+          ${a.desc}
+        </div>
+      </div>
+      <button class="achievementClaimBtn ${isClaimable ? "claimable" : ""}"
+        ${!isClaimable || a.claimed ? "disabled" : ""}>
+        ${a.claimed ? "Claimed" : "Claim"}
+      </button>
+    `;
+
+    const btn = box.querySelector("button");
+
+    btn.onclick = () => {
+  if (a.claimed) return;
+  if (!a.check()) return;
+
+  a.claimed = true;
+  stats.achievementsCompleted++;
+  renderAchievements();
+};
+
+    grid.appendChild(box);
+  });
+
+  updateAchievementNotification(anyClaimable);
+}
+
+function updateAchievementNotification(show) {
+  const dot = document.getElementById("achievementNotificationDot");
+  if (!dot) return;
+
+  dot.style.display = show ? "inline-block" : "none";
+}
+
+function showAchievementPopup(name) {
+  const popup = document.createElement("div");
+  popup.className = "achievementPopup";
+  popup.textContent = `Achievement Unlocked: ${name}`;
+
+  document.body.appendChild(popup);
+
+  setTimeout(() => {
+    popup.remove();
+  }, 3000);
+}
+
+function checkAchievements() {
+  renderAchievements();
+}
+setInterval(checkAchievements, 250);
+
+const __oldShowTab_syncMining = showTab;
+showTab = function(tabName) {
+  window.currentTab = tabName;
+  __oldShowTab_syncMining(tabName);
+};
+
+loadGame();
+
+renderGallery();
+renderBattleUpgrades();
+updatePlayerUI();
+startXPLoop();
+startCardCooldownLoop();
+startMiningTimerLoop();
+syncCursorToIcon();
+updateReturnSurfaceUI();
+
+// important: settings UI only exists after DOM is built
+initSettingsUI();
+initHelpUI();
+
+renderMiningAll();
+startAutosaveSystem();
+
+if (!stats.firstPlayedMs) stats.firstPlayedMs = nowMs();
+updateStatsUI();
+startPlaytimeLoop();
+
+</script>
+
+</body>
+</html>
